@@ -1,0 +1,14 @@
+{
+  "name": "Davids Weltreligionen-Training",
+  "short_name": "NMG Training",
+  "description": "Interaktives Training für NMG Prüfung Teil 1",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#f7f3e9",
+  "theme_color": "#0b4f4a",
+  "lang": "de-CH",
+  "icons": [
+    { "src": "/images/app-icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
+    { "src": "/images/app-icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ]
+}
