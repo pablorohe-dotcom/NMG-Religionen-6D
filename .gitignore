@@ -38,8 +38,6 @@ next-env.d.ts
 /work/
 .pnpm-store/
 source_material/
-deliverables/
 qa/
 site-archive/
-tools/
 *.zip
