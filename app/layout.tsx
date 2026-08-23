@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import './globals.css';
 
 export const metadata: Metadata = {
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? 'https://nmg-weltreligionen-training-zug-6.pablorohe.chatgpt.site'),
   title: 'Davids Weltreligionen-Training',
   description: 'Interaktives NMG-Training zur Prüfung Teil 1.',
   manifest: '/manifest.webmanifest',

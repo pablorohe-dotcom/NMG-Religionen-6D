@@ -1,11 +1,15 @@
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
+import Link from 'next/link';
+import { cloudIsConfigured } from '../lib/supabase';
+import { claimPairingCode, createAttempt, flushAttemptQueue, getLinkedLearner, queueAndSyncAttempt, type CloudState } from '../lib/progress-cloud';
 
 type Topic = 'Grundwissen' | 'Christentum' | 'Islam' | 'Judentum' | 'Gebäude & Schriften';
 type Question = { id: string; topic: Topic; prompt: string; options: string[]; answer: number; explanation: string };
 type TopicStat = { attempts: number; correct: number };
 type Progress = { stars: number; streak: number; bestStreak: number; totalAttempts: number; topics: Record<Topic, TopicStat> };
+type BeforeInstallPromptEvent = Event & { prompt: () => Promise<void> };
 
 const topics: Topic[] = ['Grundwissen', 'Christentum', 'Islam', 'Judentum', 'Gebäude & Schriften'];
 const emptyProgress = (): Progress => ({
@@ -74,16 +78,31 @@ export default function Home() {
   const [selected, setSelected] = useState<number | null>(null);
   const [locked, setLocked] = useState(false);
   const [showInstall, setShowInstall] = useState(false);
-  const [installEvent, setInstallEvent] = useState<any>(null);
+  const [installEvent, setInstallEvent] = useState<BeforeInstallPromptEvent | null>(null);
+  const [showSync, setShowSync] = useState(false);
+  const [pairingCode, setPairingCode] = useState('');
+  const [syncMessage, setSyncMessage] = useState('');
+  const [cloudState, setCloudState] = useState<CloudState>(cloudIsConfigured() ? 'connecting' : 'unavailable');
+  const [learnerId, setLearnerId] = useState<string | null>(null);
 
   useEffect(() => {
     const saved = window.localStorage.getItem('davids-nmg-progress-v1');
-    if (saved) { try { setProgress(JSON.parse(saved)); } catch { /* start fresh */ } }
-    setReady(true);
+    let loaded = emptyProgress();
+    if (saved) { try { loaded = JSON.parse(saved); } catch { /* start fresh */ } }
+    queueMicrotask(() => { setProgress(loaded); setReady(true); });
+    if (cloudIsConfigured()) {
+      getLinkedLearner().then(async (linked) => {
+        if (!linked) { setCloudState('unlinked'); return; }
+        setLearnerId(linked.id);
+        setCloudState(await flushAttemptQueue());
+      }).catch(() => setCloudState('error'));
+    }
     if ('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js').catch(() => undefined);
-    const handler = (event: Event) => { event.preventDefault(); setInstallEvent(event); };
+    const handler = (event: Event) => { event.preventDefault(); setInstallEvent(event as BeforeInstallPromptEvent); };
+    const syncOnline = () => { getLinkedLearner().then((linked) => { if (linked) return flushAttemptQueue().then(setCloudState); }).catch(() => setCloudState('error')); };
     window.addEventListener('beforeinstallprompt', handler);
-    return () => window.removeEventListener('beforeinstallprompt', handler);
+    window.addEventListener('online', syncOnline);
+    return () => { window.removeEventListener('beforeinstallprompt', handler); window.removeEventListener('online', syncOnline); };
   }, []);
 
   useEffect(() => { if (ready) window.localStorage.setItem('davids-nmg-progress-v1', JSON.stringify(progress)); }, [progress, ready]);
@@ -104,6 +123,10 @@ export default function Home() {
     if (locked) return;
     setSelected(index); setLocked(true);
     const isCorrect = index === current.answer;
+    if (learnerId) {
+      setCloudState(navigator.onLine ? 'connecting' : 'offline');
+      void queueAndSyncAttempt(createAttempt(learnerId, current.id, current.topic, isCorrect)).then(setCloudState);
+    }
     setProgress((old) => {
       const topic = old.topics[current.topic];
       const streak = isCorrect ? old.streak + 1 : 0;
@@ -124,7 +147,23 @@ export default function Home() {
   }
 
   function resetProgress() {
-    if (window.confirm('Möchtest du Davids gesamten Fortschritt wirklich löschen?')) setProgress(emptyProgress());
+    const copy = learnerId ? 'Möchtest du den Fortschritt auf diesem Gerät löschen? Die sichere Übersicht der Eltern bleibt erhalten.' : 'Möchtest du Davids gesamten Fortschritt wirklich löschen?';
+    if (window.confirm(copy)) setProgress(emptyProgress());
+  }
+
+  async function connectToParent(event: React.FormEvent) {
+    event.preventDefault();
+    if (!pairingCode.trim()) return;
+    setCloudState('connecting'); setSyncMessage('');
+    try {
+      const id = await claimPairingCode(pairingCode, progress);
+      setLearnerId(id); setCloudState('synced');
+      setSyncMessage('Verbunden! Neue Übungen erscheinen jetzt sicher im Elternbereich.');
+      setPairingCode('');
+    } catch {
+      setCloudState('error');
+      setSyncMessage('Der Code ist ungültig oder abgelaufen. Bitte einen neuen Code erzeugen.');
+    }
   }
 
   return (
@@ -132,7 +171,7 @@ export default function Home() {
       <header className="topbar">
         <button className="brand plainButton" onClick={() => setSection('start')} aria-label="Startseite"><span className="brandMark">W</span><span>Davids Weltreligionen-Training</span></button>
         <nav className="desktopNav" aria-label="Hauptnavigation">{[['start','Start'],['lernen','Lernen'],['training','Trainieren'],['progress','Fortschritt']].map(([key,label]) => <button key={key} className={section === key ? 'navButton active' : 'navButton'} onClick={() => setSection(key)}>{label}</button>)}</nav>
-        <button className="installButton" onClick={installApp}>＋ App installieren</button>
+        <div className="topActions"><button className={`cloudButton ${cloudState}`} onClick={() => setShowSync(true)}><span>●</span>{cloudState === 'synced' ? 'Mit Eltern verbunden' : cloudState === 'offline' ? 'Offline · wird später gesendet' : 'Fortschritt verbinden'}</button><button className="installButton" onClick={installApp}>＋ App installieren</button></div>
       </header>
 
       <section className="hero" id="top">
@@ -153,12 +192,13 @@ export default function Home() {
           {locked && <div className={correct ? 'feedback success' : 'feedback retry'} role="status"><strong>{correct ? 'Stark! +5 Sterne' : 'Guter Versuch. +1 Stern'}</strong><span>{current.explanation}</span></div>}
           <div className="missionFooter"><span>{progress.streak >= 2 ? `🔥 ${progress.streak} richtige Antworten in Folge` : 'Das Training wählt schwächere Themen häufiger aus.'}</span><button className="primaryButton small" onClick={() => chooseNext()} disabled={!locked}>Nächste Frage →</button></div>
         </section>}
-        {section === 'progress' && <ProgressView progress={progress} overall={overall} level={level} onReset={resetProgress} onStart={startTraining} />}
+        {section === 'progress' && <ProgressView progress={progress} overall={overall} level={level} onReset={resetProgress} onStart={startTraining} cloudState={cloudState} onConnect={() => setShowSync(true)} />}
       </section>
 
-      <footer><div><strong>Für David · Prüfung Teil 1</strong><p>Fortschritt bleibt nur auf diesem Gerät gespeichert. Die App funktioniert nach dem ersten Laden auch offline.</p></div><div className="footerLinks"><a href="https://zg.lehrplan.ch/index.php?code=a%7C6%7C1%7C12%7C0%7C5" target="_blank" rel="noreferrer">Lehrplan 21 Zug · NMG.12.5</a><a href="https://zg.lehrplan.ch/index.php?code=a%7C6%7C1%7C12%7C0%7C2" target="_blank" rel="noreferrer">NMG.12.2</a><button onClick={() => setSection('quellen')}>Quellen & Bildnachweise</button></div></footer>
+      <footer><div><strong>Für David · Prüfung Teil 1</strong><p>{learnerId ? 'Neue Übungen werden sicher für den Elternbereich synchronisiert. Offline wird später automatisch nachgeholt.' : 'Fortschritt bleibt auf diesem Gerät gespeichert, bis du ihn mit dem Elternbereich verbindest.'}</p></div><div className="footerLinks"><Link href="/parent">Elternbereich</Link><a href="https://zg.lehrplan.ch/index.php?code=a%7C6%7C1%7C12%7C0%7C5" target="_blank" rel="noreferrer">Lehrplan 21 Zug · NMG.12.5</a><a href="https://zg.lehrplan.ch/index.php?code=a%7C6%7C1%7C12%7C0%7C2" target="_blank" rel="noreferrer">NMG.12.2</a><button onClick={() => setSection('quellen')}>Quellen & Bildnachweise</button></div></footer>
       {section === 'quellen' && <Sources onClose={() => setSection('start')} />}
       {showInstall && <div className="modalBackdrop" role="presentation" onClick={() => setShowInstall(false)}><div className="modal" role="dialog" aria-modal="true" onClick={(e) => e.stopPropagation()}><button className="modalClose" onClick={() => setShowInstall(false)}>×</button><p className="eyebrow">APP INSTALLIEREN</p><h2>Auf Mac oder Windows</h2><p>Öffne das Browser-Menü in Chrome oder Edge und wähle <strong>„App installieren“</strong>. In Safari auf dem Mac: <strong>Ablage → Zum Dock hinzufügen</strong>. Danach startet die App wie ein normales Programm und bleibt offline verfügbar.</p></div></div>}
+      {showSync && <div className="modalBackdrop" role="presentation" onClick={() => setShowSync(false)}><div className="modal syncModal" role="dialog" aria-modal="true" onClick={(e) => e.stopPropagation()}><button className="modalClose" onClick={() => setShowSync(false)}>×</button><p className="eyebrow">SICHER SYNCHRONISIEREN</p><h2>{learnerId ? 'Mit Eltern verbunden' : 'Mit Eltern verbinden'}</h2>{learnerId ? <><div className="syncSuccess">✓ Davids neue Übungen werden im geschützten Elternbereich angezeigt.</div><p>Du kannst auch offline trainieren. Sobald das Gerät wieder Internet hat, werden wartende Ergebnisse automatisch gesendet.</p><Link className="secondaryButton" href="/parent">Elternbereich öffnen</Link></> : cloudState === 'unavailable' ? <p>Die Cloud-Verbindung ist in dieser Installation noch nicht eingerichtet. Die App speichert den Fortschritt weiterhin nur auf diesem Gerät.</p> : <><p>Deine Eltern erzeugen im Elternbereich einen achtstelligen Code. Gib ihn hier ein; der bisherige Fortschritt wird einmalig übernommen.</p><form className="pairingForm" onSubmit={connectToParent}><label htmlFor="pairing-code">Verbindungscode</label><input id="pairing-code" value={pairingCode} onChange={(event) => setPairingCode(event.target.value.toUpperCase())} maxLength={8} placeholder="A1B2C3D4" autoCapitalize="characters" autoComplete="one-time-code" required/><button className="primaryButton" disabled={cloudState === 'connecting'}>{cloudState === 'connecting' ? 'Verbinden …' : 'Sicher verbinden'}</button></form><Link className="parentBack" href="/parent">Zum Elternbereich →</Link></>}{syncMessage && <p className="noticeBox">{syncMessage}</p>}</div></div>}
     </main>
   );
 }
@@ -195,9 +235,9 @@ function Buildings({ onStart }: { onStart: (topic: Topic | 'Alle') => void }) {
   return <section className="studyBlock"><div className="blockTitle"><span>04</span><div><h3>Heilige Räume erkennen</h3><p>Bild ansehen, Begriffe laut erklären, danach ohne Hilfe testen</p></div></div><div className="buildingGrid">{cards.map((card) => <article className="buildingCard" key={card.title}><img src={card.image} alt={card.alt}/><div><h4>{card.title}</h4><div className="labelCloud">{card.labels.map((label) => <span key={label}>{label}</span>)}</div></div></article>)}</div><button className="primaryButton small" onClick={() => onStart('Gebäude & Schriften')}>Gebäude-Quiz starten →</button></section>;
 }
 
-function ProgressView({ progress, overall, level, onReset, onStart }: { progress: Progress; overall: number; level: string; onReset: () => void; onStart: (topic: Topic | 'Alle') => void }) {
+function ProgressView({ progress, overall, level, onReset, onStart, cloudState, onConnect }: { progress: Progress; overall: number; level: string; onReset: () => void; onStart: (topic: Topic | 'Alle') => void; cloudState: CloudState; onConnect: () => void }) {
   const weakest = [...topics].sort((a,b) => ratio(progress.topics[a]) - ratio(progress.topics[b]))[0];
-  return <><div className="sectionHeading"><div><p className="eyebrow">FORTSCHRITT</p><h2>{level}: {overall}%</h2></div><button className="primaryButton small" onClick={() => onStart(weakest)}>Schwächstes Thema üben →</button></div><div className="statGrid"><article><span>✦</span><strong>{progress.stars}</strong><p>Sterne gesammelt</p></article><article><span>🔥</span><strong>{progress.bestStreak}</strong><p>Beste Serie</p></article><article><span>✓</span><strong>{progress.totalAttempts}</strong><p>Fragen gelöst</p></article></div><section className="masteryCard"><h3>Themen-Meisterschaft</h3>{topics.map((topic) => { const stat=progress.topics[topic]; const p=percent(stat); return <div className="masteryRow" key={topic}><div><strong>{topic}</strong><span>{stat.attempts ? `${stat.correct} von ${stat.attempts} richtig` : 'noch nicht begonnen'}</span></div><div className="wideBar"><span style={{width:`${p}%`}} /></div><b>{p}%</b></div>; })}</section><div className="badgeGrid"><Badge active={progress.totalAttempts >= 1} icon="🌱" title="Erster Schritt" copy="1 Frage gelöst"/><Badge active={progress.bestStreak >= 5} icon="🔥" title="Heisse Serie" copy="5-mal in Folge richtig"/><Badge active={topics.filter(t => percent(progress.topics[t]) >= 80).length >= 3} icon="🧭" title="Weltenkenner" copy="3 Themen über 80%"/><Badge active={progress.stars >= 180} icon="🏆" title="Prüfungsbereit" copy="180 Sterne gesammelt"/></div><button className="dangerLink" onClick={onReset}>Fortschritt zurücksetzen</button></>;
+  return <><div className="sectionHeading"><div><p className="eyebrow">FORTSCHRITT</p><h2>{level}: {overall}%</h2></div><button className="primaryButton small" onClick={() => onStart(weakest)}>Schwächstes Thema üben →</button></div><button className={`syncBanner ${cloudState}`} onClick={onConnect}><span>{cloudState === 'synced' ? '✓' : cloudState === 'offline' ? '↻' : '☁'}</span><div><strong>{cloudState === 'synced' ? 'Sicher mit dem Elternbereich verbunden' : cloudState === 'offline' ? 'Offline – Ergebnisse warten sicher' : 'Fortschritt mit den Eltern teilen'}</strong><p>{cloudState === 'synced' ? 'Neue Antworten werden automatisch synchronisiert.' : cloudState === 'offline' ? 'Die Synchronisierung läuft weiter, sobald Internet da ist.' : 'Ein einmaliger Code genügt. Du brauchst keine E-Mail.'}</p></div><b>→</b></button><div className="statGrid"><article><span>✦</span><strong>{progress.stars}</strong><p>Sterne gesammelt</p></article><article><span>🔥</span><strong>{progress.bestStreak}</strong><p>Beste Serie</p></article><article><span>✓</span><strong>{progress.totalAttempts}</strong><p>Fragen gelöst</p></article></div><section className="masteryCard"><h3>Themen-Meisterschaft</h3>{topics.map((topic) => { const stat=progress.topics[topic]; const p=percent(stat); return <div className="masteryRow" key={topic}><div><strong>{topic}</strong><span>{stat.attempts ? `${stat.correct} von ${stat.attempts} richtig` : 'noch nicht begonnen'}</span></div><div className="wideBar"><span style={{width:`${p}%`}} /></div><b>{p}%</b></div>; })}</section><div className="badgeGrid"><Badge active={progress.totalAttempts >= 1} icon="🌱" title="Erster Schritt" copy="1 Frage gelöst"/><Badge active={progress.bestStreak >= 5} icon="🔥" title="Heisse Serie" copy="5-mal in Folge richtig"/><Badge active={topics.filter(t => percent(progress.topics[t]) >= 80).length >= 3} icon="🧭" title="Weltenkenner" copy="3 Themen über 80%"/><Badge active={progress.stars >= 180} icon="🏆" title="Prüfungsbereit" copy="180 Sterne gesammelt"/></div><button className="dangerLink" onClick={onReset}>Fortschritt auf diesem Gerät zurücksetzen</button></>;
 }
 
 function Badge({active,icon,title,copy}:{active:boolean;icon:string;title:string;copy:string}) { return <article className={active ? 'badge active' : 'badge'}><span>{icon}</span><div><strong>{title}</strong><p>{copy}</p></div></article>; }

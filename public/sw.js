@@ -1,4 +1,4 @@
-const CACHE = 'davids-nmg-v1';
+const CACHE = 'davids-nmg-v2';
 const CORE = ['/', '/manifest.webmanifest', '/images/app-icon-192.png', '/images/app-icon-512.png', '/images/church.jpg', '/images/mosque.jpg', '/images/synagogue.jpg'];
 
 self.addEventListener('install', (event) => {
@@ -11,6 +11,8 @@ self.addEventListener('activate', (event) => {
 
 self.addEventListener('fetch', (event) => {
   if (event.request.method !== 'GET') return;
+  const url = new URL(event.request.url);
+  if (url.origin !== self.location.origin) return;
   event.respondWith(fetch(event.request).then((response) => {
     const copy = response.clone();
     caches.open(CACHE).then((cache) => cache.put(event.request, copy));
