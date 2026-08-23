@@ -4,16 +4,17 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { getSupabaseClient } from '../../lib/supabase';
 
-type LearningEvent = { id: number; app_key: string; topic: string; score: number; reward_points: number; occurred_at: string };
-type LegacySnapshot = {
+type LearningEvent = { id: number; app_key: string; topic: string; score: number; reward_points: number; occurred_at: string; received_at: string };
+type ProgressSnapshot = {
   stars?: number;
+  streak?: number;
   bestStreak?: number;
   totalAttempts?: number;
   topics?: Record<string, { attempts?: number; correct?: number }>;
 };
 type Learner = { id: string; display_name: string };
 type LearningApp = { app_key: string; title: string; subject: string; grade_label: string | null; topic_labels: string[] };
-type LegacyRow = { app_key: string; snapshot: LegacySnapshot };
+type ProgressBackup = { id: number; app_key: string; snapshot: ProgressSnapshot; reason: string; created_at: string };
 
 const DEFAULT_APP_KEY = 'nmg-religionen-pruefung-1';
 type ParentLanguage = 'de' | 'es' | 'en';
@@ -27,7 +28,8 @@ const PARENT_COPY = {
     materials: 'MATERIALIEN FÜR FAMILIEN', materialsTitle: 'Lernstoff, Lösungen und Begleitung', materialsCopy: 'Die Dokumente in der gewählten Sprache sind ohne Zugriff auf die ursprünglichen Fotos verständlich und können heruntergeladen oder ausgedruckt werden.', download: 'PDF herunterladen ↓',
     accuracy: 'Genauigkeit', correctAnswers: (n: number) => `${n} richtige Antworten`, practiced: 'Geübte Aufgaben', practicedDays: (n: number) => `an ${n} Tagen online erfasst`, points: 'Punkte', bestStreak: (n: number) => `beste Serie: ${n}`, lastActivity: 'Letzte Aktivität', none: 'Noch keine', nextFocus: (topic: string) => `Nächster Fokus: ${topic}`, afterFirst: 'Nach dem ersten Training sichtbar',
     topics: 'THEMEN', topicConfidence: 'Sicherheit nach Thema', result: (score: number, attempts: number) => `${score} von ${attempts} richtig`, notPracticed: 'noch nicht geübt', recentDays: 'LETZTE LERNTAGE', activity: 'Aktivität', questions: (n: number) => `${n} Fragen`, empty: 'Sobald David nach der Verbindung trainiert, erscheint hier seine Aktivität.',
-    connect: 'LERN-APP VERBINDEN', connectTitle: 'Ein neues Gerät oder eine neue App verbinden', connectCopy: 'Der Code verbindet die jeweilige Installation mit Davids zentralem Profil. So können später auch Mathematik, Sprachen und weitere Fächer dieselbe Lernzentrale verwenden.', codeValidity: '20 Minuten gültig · nur einmal verwendbar', createCode: 'Verbindungscode erzeugen', privacy: 'Gespeichert werden App, Fach, Thema, Ergebnis, Punkte und Zeitpunkt. Keine Antworten, Fotos, Schule oder Adresse.', clear: 'Fortschritt dieser App löschen', clearConfirm: (title: string) => `Den synchronisierten Fortschritt für „${title}“ wirklich löschen?`, cleared: 'Der synchronisierte Fortschritt wurde gelöscht.', grade: '6. Klasse', appTitle: 'Weltreligionen - Prüfung Teil 1',
+    connect: 'LERN-APP VERBINDEN', connectTitle: 'Ein neues Gerät oder eine neue App verbinden', connectCopy: 'Der Code verbindet die jeweilige Installation mit Davids zentralem Profil. So können später auch Mathematik, Sprachen und weitere Fächer dieselbe Lernzentrale verwenden.', codeValidity: '20 Minuten gültig · nur einmal verwendbar', createCode: 'Verbindungscode erzeugen', privacy: 'Gespeichert werden App, Fach, Thema, Ergebnis, Punkte und Zeitpunkt. Keine Antworten, Fotos, Schule oder Adresse.', clear: 'Fortschritt dieser App zurücksetzen', clearConfirm: (title: string) => `Den synchronisierten Fortschritt für „${title}“ wirklich zurücksetzen? Zuvor wird automatisch eine Sicherung erstellt.`, cleared: 'Der Fortschritt wurde zurückgesetzt und kann über die Sicherungen wiederhergestellt werden.', grade: '6. Klasse', appTitle: 'Weltreligionen - Prüfung Teil 1',
+    security: 'SICHERHEIT', passwordTitle: 'Passwort für Zurücksetzen', passwordCopy: 'Dieses Passwort wird in Davids App verlangt. Es ist nur hier im geschützten Elternbereich sichtbar und kann jederzeit geändert werden.', passwordLabel: 'Sichtbares Eltern-Passwort', savePassword: 'Passwort speichern', passwordSaved: 'Das Passwort wurde gespeichert.', passwordRule: '4 bis 32 Zeichen', backups: 'SICHERUNGEN', backupsTitle: 'Wiederherstellungspunkte', backupsCopy: 'Bei Änderungen werden automatisch Sicherungen erstellt. Die neuesten 50 pro Lern-App bleiben erhalten.', noBackups: 'Noch keine Sicherung vorhanden.', restore: 'Wiederherstellen', restoreConfirm: 'Diese Sicherung wiederherstellen? Der aktuelle Stand wird vorher ebenfalls gesichert.', restored: 'Der ausgewählte Fortschritt wurde wiederhergestellt.', backupStats: (attempts: number, stars: number) => `${attempts} Aufgaben · ${stars} Punkte`,
   },
   es: {
     language: 'Idioma', error: 'Error', area: 'ZONA DE PADRES', privateArea: 'ZONA PRIVADA PARA PADRES', loading: 'Cargando el progreso…',
@@ -37,7 +39,8 @@ const PARENT_COPY = {
     materials: 'MATERIALES PARA FAMILIAS', materialsTitle: 'Estudio, soluciones y acompañamiento', materialsCopy: 'Los documentos disponibles en el idioma elegido se entienden sin las fotografías originales y pueden descargarse o imprimirse.', download: 'Descargar PDF ↓',
     accuracy: 'Precisión', correctAnswers: (n: number) => `${n} respuestas correctas`, practiced: 'Ejercicios realizados', practicedDays: (n: number) => `registrados en ${n} días`, points: 'Puntos', bestStreak: (n: number) => `mejor racha: ${n}`, lastActivity: 'Última actividad', none: 'Todavía ninguna', nextFocus: (topic: string) => `Próximo enfoque: ${topic}`, afterFirst: 'Visible después del primer entrenamiento',
     topics: 'TEMAS', topicConfidence: 'Dominio por tema', result: (score: number, attempts: number) => `${score} de ${attempts} correctas`, notPracticed: 'todavía no practicado', recentDays: 'ÚLTIMOS DÍAS DE ESTUDIO', activity: 'Actividad', questions: (n: number) => `${n} preguntas`, empty: 'Cuando David practique después de conectar la aplicación, su actividad aparecerá aquí.',
-    connect: 'CONECTAR APLICACIÓN', connectTitle: 'Conectar un dispositivo o una aplicación nueva', connectCopy: 'El código vincula esa instalación con el perfil central de David. En el futuro, Matemáticas, idiomas y otras asignaturas podrán utilizar el mismo centro familiar.', codeValidity: 'Válido durante 20 minutos · un solo uso', createCode: 'Generar código de conexión', privacy: 'Se guardan aplicación, asignatura, tema, resultado, puntos y momento. No se guardan respuestas, fotos, colegio ni dirección.', clear: 'Borrar progreso de esta aplicación', clearConfirm: (title: string) => `¿Borrar realmente el progreso sincronizado de «${title}»?`, cleared: 'Se ha borrado el progreso sincronizado.', grade: '6.º curso', appTitle: 'Religiones del mundo - Prueba 1',
+    connect: 'CONECTAR APLICACIÓN', connectTitle: 'Conectar un dispositivo o una aplicación nueva', connectCopy: 'El código vincula esa instalación con el perfil central de David. En el futuro, Matemáticas, idiomas y otras asignaturas podrán utilizar el mismo centro familiar.', codeValidity: 'Válido durante 20 minutos · un solo uso', createCode: 'Generar código de conexión', privacy: 'Se guardan aplicación, asignatura, tema, resultado, puntos y momento. No se guardan respuestas, fotos, colegio ni dirección.', clear: 'Reiniciar progreso de esta aplicación', clearConfirm: (title: string) => `¿Reiniciar el progreso sincronizado de «${title}»? Antes se creará automáticamente una copia de seguridad.`, cleared: 'El progreso se ha reiniciado y puede recuperarse desde las copias de seguridad.', grade: '6.º curso', appTitle: 'Religiones del mundo - Prueba 1',
+    security: 'SEGURIDAD', passwordTitle: 'Contraseña para reiniciar', passwordCopy: 'David deberá introducir esta contraseña en su aplicación. Solo es visible aquí, en la zona protegida para padres, y puedes cambiarla cuando quieras.', passwordLabel: 'Contraseña parental visible', savePassword: 'Guardar contraseña', passwordSaved: 'La contraseña se ha guardado.', passwordRule: 'Entre 4 y 32 caracteres', backups: 'COPIAS DE SEGURIDAD', backupsTitle: 'Puntos de restauración', backupsCopy: 'Cuando cambia el progreso se crean copias automáticamente. Se conservan las 50 más recientes por aplicación.', noBackups: 'Todavía no hay ninguna copia.', restore: 'Restaurar', restoreConfirm: '¿Restaurar esta copia? El estado actual también se guardará antes.', restored: 'Se ha restaurado el progreso seleccionado.', backupStats: (attempts: number, stars: number) => `${attempts} ejercicios · ${stars} puntos`,
   },
   en: {
     language: 'Language', error: 'Error', area: 'PARENT AREA', privateArea: 'PRIVATE PARENT AREA', loading: 'Loading progress…',
@@ -47,7 +50,8 @@ const PARENT_COPY = {
     materials: 'FAMILY MATERIALS', materialsTitle: 'Study content, solutions and support', materialsCopy: 'Documents in the selected language are understandable without the original photographs and can be downloaded or printed.', download: 'Download PDF ↓',
     accuracy: 'Accuracy', correctAnswers: (n: number) => `${n} correct answers`, practiced: 'Tasks practised', practicedDays: (n: number) => `recorded on ${n} days`, points: 'Points', bestStreak: (n: number) => `best streak: ${n}`, lastActivity: 'Last activity', none: 'None yet', nextFocus: (topic: string) => `Next focus: ${topic}`, afterFirst: 'Visible after the first practice session',
     topics: 'TOPICS', topicConfidence: 'Confidence by topic', result: (score: number, attempts: number) => `${score} of ${attempts} correct`, notPracticed: 'not practised yet', recentDays: 'RECENT STUDY DAYS', activity: 'Activity', questions: (n: number) => `${n} questions`, empty: "David's activity will appear here after the learning app is connected and he practises.",
-    connect: 'CONNECT LEARNING APP', connectTitle: 'Connect a new device or learning app', connectCopy: "The code links that installation to David's central profile. Mathematics, languages and future subjects can use the same family learning hub.", codeValidity: 'Valid for 20 minutes · one use only', createCode: 'Create connection code', privacy: 'The platform stores app, subject, topic, result, points and time. It does not store answers, photos, school or address.', clear: 'Delete progress for this app', clearConfirm: (title: string) => `Delete the synchronised progress for “${title}”?`, cleared: 'The synchronised progress was deleted.', grade: 'Grade 6', appTitle: 'World religions - Test 1',
+    connect: 'CONNECT LEARNING APP', connectTitle: 'Connect a new device or learning app', connectCopy: "The code links that installation to David's central profile. Mathematics, languages and future subjects can use the same family learning hub.", codeValidity: 'Valid for 20 minutes · one use only', createCode: 'Create connection code', privacy: 'The platform stores app, subject, topic, result, points and time. It does not store answers, photos, school or address.', clear: 'Reset progress for this app', clearConfirm: (title: string) => `Reset the synchronised progress for “${title}”? A backup will be created first.`, cleared: 'Progress was reset and can be recovered from the backups.', grade: 'Grade 6', appTitle: 'World religions - Test 1',
+    security: 'SECURITY', passwordTitle: 'Reset password', passwordCopy: "David's app asks for this password before resetting. It is visible only here in the protected parent area and can be changed at any time.", passwordLabel: 'Visible parent password', savePassword: 'Save password', passwordSaved: 'The password was saved.', passwordRule: '4 to 32 characters', backups: 'BACKUPS', backupsTitle: 'Restore points', backupsCopy: 'Backups are created automatically when progress changes. The latest 50 per learning app are retained.', noBackups: 'No backup exists yet.', restore: 'Restore', restoreConfirm: 'Restore this backup? The current state will also be saved first.', restored: 'The selected progress was restored.', backupStats: (attempts: number, stars: number) => `${attempts} tasks · ${stars} points`,
   },
 } as const;
 
@@ -82,7 +86,10 @@ export default function ParentPage() {
   const [notice, setNotice] = useState('');
   const [learner, setLearner] = useState<Learner | null>(null);
   const [events, setEvents] = useState<LearningEvent[]>([]);
-  const [legacy, setLegacy] = useState<LegacyRow[]>([]);
+  const [consolidated, setConsolidated] = useState<ProgressSnapshot>({});
+  const [progressCutoff, setProgressCutoff] = useState('1970-01-01T00:00:00.000Z');
+  const [backups, setBackups] = useState<ProgressBackup[]>([]);
+  const [parentPassword, setParentPassword] = useState('');
   const [learningApps, setLearningApps] = useState<LearningApp[]>([]);
   const [selectedAppKey, setSelectedAppKey] = useState(DEFAULT_APP_KEY);
   const [pairingCode, setPairingCode] = useState('');
@@ -118,14 +125,21 @@ export default function ParentPage() {
     const nextLearner = { id: current.learner_id, display_name: current.display_name };
     setLearner(nextLearner);
 
-    const [eventResult, legacyResult, appsResult] = await Promise.all([
-      supabase.from('learning_events').select('id,app_key,topic,score,reward_points,occurred_at').eq('learner_id', nextLearner.id).order('occurred_at', { ascending: true }),
-      supabase.from('legacy_progress').select('app_key,snapshot').eq('learner_id', nextLearner.id),
+    const [eventResult, appsResult, progressResult, backupResult, passwordResult, controlResult] = await Promise.all([
+      supabase.from('learning_events').select('id,app_key,topic,score,reward_points,occurred_at,received_at').eq('learner_id', nextLearner.id).order('occurred_at', { ascending: true }),
       supabase.from('learning_apps').select('app_key,title,subject,grade_label,topic_labels').eq('active', true).order('subject'),
+      supabase.rpc('get_consolidated_progress', { p_learner_id: nextLearner.id, p_app_key: selectedAppKey }),
+      supabase.from('progress_backups').select('id,app_key,snapshot,reason,created_at').eq('learner_id', nextLearner.id).eq('app_key', selectedAppKey).order('created_at', { ascending: false }).limit(50),
+      supabase.rpc('get_or_create_reset_password', { p_learner_id: nextLearner.id }),
+      supabase.from('learner_app_controls').select('cutoff_at').eq('learner_id', nextLearner.id).eq('app_key', selectedAppKey).maybeSingle(),
     ]);
-    if (eventResult.error || legacyResult.error || appsResult.error) setNotice(`${c.error}: ${eventResult.error?.message ?? legacyResult.error?.message ?? appsResult.error?.message}`);
+    const dashboardError = eventResult.error ?? appsResult.error ?? progressResult.error ?? backupResult.error ?? passwordResult.error ?? controlResult.error;
+    if (dashboardError) setNotice(`${c.error}: ${dashboardError.message}`);
     setEvents((eventResult.data ?? []) as LearningEvent[]);
-    setLegacy((legacyResult.data ?? []) as LegacyRow[]);
+    setConsolidated((progressResult.data ?? {}) as ProgressSnapshot);
+    setBackups((backupResult.data ?? []) as ProgressBackup[]);
+    setParentPassword((passwordResult.data ?? '') as string);
+    setProgressCutoff((controlResult.data as { cutoff_at?: string } | null)?.cutoff_at ?? '1970-01-01T00:00:00.000Z');
     const apps = (appsResult.data ?? []) as LearningApp[];
     setLearningApps(apps);
     if (apps.length && !apps.some((app) => app.app_key === selectedAppKey)) setSelectedAppKey(apps[0].app_key);
@@ -140,42 +154,34 @@ export default function ParentPage() {
   }, [loadDashboard, supabase]);
 
   const selectedApp = learningApps.find((app) => app.app_key === selectedAppKey) ?? learningApps[0];
-  const activeEvents = useMemo(() => events.filter((event) => event.app_key === selectedAppKey), [events, selectedAppKey]);
-  const activeLegacy = useMemo(() => legacy.filter((row) => row.app_key === selectedAppKey).map((row) => row.snapshot), [legacy, selectedAppKey]);
+  const activeEvents = useMemo(() => {
+    const cutoff = new Date(progressCutoff).getTime();
+    return events.filter((event) => event.app_key === selectedAppKey && new Date(event.received_at).getTime() > cutoff);
+  }, [events, progressCutoff, selectedAppKey]);
   const topicNames = useMemo(() => {
     const names = new Set(selectedApp?.topic_labels ?? []);
     activeEvents.forEach((event) => names.add(event.topic));
-    activeLegacy.forEach((snapshot) => Object.keys(snapshot.topics ?? {}).forEach((topic) => names.add(topic)));
+    Object.keys(consolidated.topics ?? {}).forEach((topic) => names.add(topic));
     return [...names];
-  }, [activeEvents, activeLegacy, selectedApp]);
+  }, [activeEvents, consolidated.topics, selectedApp]);
 
   const stats = useMemo(() => {
     const byTopic = Object.fromEntries(topicNames.map((topic) => [topic, { attempts: 0, score: 0 }])) as Record<string, { attempts: number; score: number }>;
-    let totalAttempts = 0; let correct = 0; let points = 0; let bestStreak = 0; let streak = 0;
-    for (const snapshot of activeLegacy) {
-      totalAttempts += snapshot.totalAttempts ?? 0;
-      points += snapshot.stars ?? 0;
-      bestStreak = Math.max(bestStreak, snapshot.bestStreak ?? 0);
-      for (const topic of topicNames) {
-        byTopic[topic].attempts += snapshot.topics?.[topic]?.attempts ?? 0;
-        byTopic[topic].score += snapshot.topics?.[topic]?.correct ?? 0;
-        correct += snapshot.topics?.[topic]?.correct ?? 0;
-      }
+    let correct = 0;
+    for (const topic of topicNames) {
+      byTopic[topic].attempts = consolidated.topics?.[topic]?.attempts ?? 0;
+      byTopic[topic].score = consolidated.topics?.[topic]?.correct ?? 0;
+      correct += byTopic[topic].score;
     }
-    for (const event of activeEvents) {
-      const score = Number(event.score);
-      totalAttempts += 1; points += event.reward_points; correct += score;
-      if (!byTopic[event.topic]) byTopic[event.topic] = { attempts: 0, score: 0 };
-      byTopic[event.topic].attempts += 1; byTopic[event.topic].score += score;
-      if (score >= 1) { streak += 1; bestStreak = Math.max(bestStreak, streak); }
-      else streak = 0;
-    }
+    const totalAttempts = consolidated.totalAttempts ?? 0;
+    const points = consolidated.stars ?? 0;
+    const bestStreak = consolidated.bestStreak ?? 0;
     const overall = totalAttempts ? Math.round(correct / totalAttempts * 100) : 0;
     const practicedDays = new Set(activeEvents.map((event) => event.occurred_at.slice(0, 10))).size;
     const lastActivity = activeEvents.at(-1)?.occurred_at;
     const weakest = topicNames.filter((topic) => byTopic[topic].attempts > 0).sort((a, b) => byTopic[a].score / byTopic[a].attempts - byTopic[b].score / byTopic[b].attempts)[0];
     return { byTopic, totalAttempts, correct: Math.round(correct), points, bestStreak, overall, practicedDays, lastActivity, weakest };
-  }, [activeEvents, activeLegacy, topicNames]);
+  }, [activeEvents, consolidated, topicNames]);
 
   const recentDays = useMemo(() => {
     const days = new Map<string, { attempts: number; correct: number }>();
@@ -211,9 +217,25 @@ export default function ParentPage() {
   async function clearProgress() {
     if (!supabase || !learner || !selectedApp || !window.confirm(c.clearConfirm(selectedTitle))) return;
     setBusy(true);
-    const first = await supabase.from('learning_events').delete().eq('learner_id', learner.id).eq('app_key', selectedApp.app_key);
-    const second = await supabase.from('legacy_progress').delete().eq('learner_id', learner.id).eq('app_key', selectedApp.app_key);
-    setNotice(first.error || second.error ? `${c.error}: ${first.error?.message ?? second.error?.message}` : c.cleared);
+    const { error } = await supabase.rpc('parent_reset_progress', { p_learner_id: learner.id, p_app_key: selectedApp.app_key });
+    setNotice(error ? `${c.error}: ${error.message}` : c.cleared);
+    await loadDashboard(); setBusy(false);
+  }
+
+  async function saveParentPassword(event: React.FormEvent) {
+    event.preventDefault();
+    if (!supabase || !learner || parentPassword.trim().length < 4) return;
+    setBusy(true); setNotice('');
+    const { error } = await supabase.rpc('set_reset_password', { p_learner_id: learner.id, p_password: parentPassword.trim() });
+    setNotice(error ? `${c.error}: ${error.message}` : c.passwordSaved);
+    setBusy(false);
+  }
+
+  async function restoreBackup(backup: ProgressBackup) {
+    if (!supabase || !window.confirm(c.restoreConfirm)) return;
+    setBusy(true); setNotice('');
+    const { error } = await supabase.rpc('restore_progress_backup', { p_backup_id: backup.id });
+    setNotice(error ? `${c.error}: ${error.message}` : c.restored);
     await loadDashboard(); setBusy(false);
   }
 
@@ -234,6 +256,10 @@ export default function ParentPage() {
     <div className="parentGrid"><section className="parentPanel"><div className="panelHeading"><div><p className="eyebrow">{c.topics}</p><h2>{c.topicConfidence}</h2></div></div>{topicNames.map((topic) => { const row = stats.byTopic[topic]; const value = row.attempts ? Math.round(row.score / row.attempts * 100) : 0; return <div className="parentTopic" key={topic}><div><strong>{displayTopic(topic)}</strong><span>{row.attempts ? c.result(Math.round(row.score), row.attempts) : c.notPracticed}</span></div><div className="wideBar"><span style={{ width: `${value}%` }}/></div><b>{value}%</b></div>; })}</section>
       <section className="parentPanel"><p className="eyebrow">{c.recentDays}</p><h2>{c.activity}</h2>{recentDays.length ? <div className="dayList">{recentDays.map(([date, day]) => <div key={date}><time>{new Intl.DateTimeFormat(locale, { weekday: 'short', day: '2-digit', month: '2-digit' }).format(new Date(`${date}T12:00:00Z`))}</time><span>{c.questions(day.attempts)}</span><b>{Math.round(day.correct / day.attempts * 100)}%</b></div>)}</div> : <p className="emptyState">{c.empty}</p>}</section></div>
     <section className="pairingPanel"><div><p className="eyebrow">{c.connect}</p><h2>{c.connectTitle}</h2><p>{c.connectCopy}</p></div><div className="pairingAction">{pairingCode ? <><code>{pairingCode}</code><small>{c.codeValidity}</small></> : <button className="primaryButton" onClick={generateCode} disabled={busy}>{c.createCode}</button>}</div></section>
+    <div className="parentControlGrid">
+      <section className="parentPanel passwordPanel"><p className="eyebrow">{c.security}</p><h2>{c.passwordTitle}</h2><p>{c.passwordCopy}</p><form onSubmit={saveParentPassword}><label htmlFor="reset-control-password">{c.passwordLabel}</label><div><input id="reset-control-password" type="text" minLength={4} maxLength={32} value={parentPassword} onChange={(event) => setParentPassword(event.target.value)} required/><button className="primaryButton" disabled={busy || parentPassword.trim().length < 4}>{c.savePassword}</button></div><small>{c.passwordRule}</small></form></section>
+      <section className="parentPanel backupPanel"><p className="eyebrow">{c.backups}</p><h2>{c.backupsTitle}</h2><p>{c.backupsCopy}</p>{backups.length ? <div className="backupList">{backups.map((backup) => <div key={backup.id}><div><time>{new Intl.DateTimeFormat(locale, { dateStyle: 'medium', timeStyle: 'short' }).format(new Date(backup.created_at))}</time><small>{c.backupStats(backup.snapshot.totalAttempts ?? 0, backup.snapshot.stars ?? 0)}</small></div><button className="secondaryButton compactButton" onClick={() => restoreBackup(backup)} disabled={busy}>{c.restore}</button></div>)}</div> : <p className="emptyState">{c.noBackups}</p>}</section>
+    </div>
     <div className="privacyRow"><p>{c.privacy}</p><button className="dangerLink" onClick={clearProgress} disabled={busy}>{c.clear}</button></div>
   </ParentShell>;
 }

@@ -1,4 +1,4 @@
-const CACHE = 'davids-nmg-v2';
+const CACHE = 'davids-nmg-v3';
 const CORE = ['/', '/manifest.webmanifest', '/images/app-icon-192.png', '/images/app-icon-512.png', '/images/church.jpg', '/images/mosque.jpg', '/images/synagogue.jpg'];
 
 self.addEventListener('install', (event) => {
@@ -7,6 +7,10 @@ self.addEventListener('install', (event) => {
 
 self.addEventListener('activate', (event) => {
   event.waitUntil(caches.keys().then((keys) => Promise.all(keys.filter((key) => key !== CACHE).map((key) => caches.delete(key)))).then(() => self.clients.claim()));
+});
+
+self.addEventListener('message', (event) => {
+  if (event.data?.type === 'SKIP_WAITING') self.skipWaiting();
 });
 
 self.addEventListener('fetch', (event) => {

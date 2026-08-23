@@ -11,7 +11,8 @@ La aplicación entrena de forma progresiva los objetivos de la primera prueba:
 - edificios, escrituras, símbolos, personas importantes, costumbres y reglas;
 - preguntas con explicación inmediata, estrellas, rachas, niveles y progreso por tema;
 - funcionamiento sin conexión después de la primera carga;
-- progreso local sin conexión y sincronización opcional con un panel privado para padres.
+- progreso sin conexión y sincronización bidireccional entre dispositivos mediante un panel privado para padres;
+- actualización automática de la aplicación instalada sin borrar el progreso.
 
 Versión web: [Davids Weltreligionen-Training](https://nmg-religionen-6d.netlify.app/)
 
@@ -61,16 +62,17 @@ La ruta `/parent` contiene una **central de aprendizaje familiar** protegida med
 - ver el dominio de cada tema y los últimos días de entrenamiento;
 - generar un código temporal para vincular el dispositivo de David;
 - descargar únicamente las soluciones y guías correspondientes al idioma seleccionado;
-- eliminar todo el progreso sincronizado.
+- consultar y cambiar la contraseña parental necesaria para reiniciar el progreso;
+- restaurar copias automáticas y reiniciar el progreso con una copia previa de seguridad.
 
 El selector superior separa los resultados por aplicación y asignatura. NMG Religiones es la primera aplicación registrada, pero el modelo de datos no depende de esa materia.
 
-David no necesita correo. Su dispositivo utiliza una sesión anónima de Supabase, introduce una sola vez el código de ocho caracteres y después envía únicamente tema, resultado, estrellas y fecha. Si está sin conexión, los intentos quedan en una cola local y se transmiten al recuperar internet.
+David no necesita correo. Su dispositivo utiliza una sesión anónima de Supabase, introduce una sola vez el código de ocho caracteres y después envía únicamente tema, resultado, estrellas y fecha. Si está sin conexión, los intentos quedan en una cola local y se transmiten al recuperar internet. Al abrir o volver a enfocar la aplicación, descarga el progreso consolidado de todos sus dispositivos. Cada cambio genera una copia de seguridad deduplicada; se conservan las 50 más recientes por alumno y aplicación.
 
 ### Activar Supabase
 
 1. Crea un proyecto en Supabase, preferentemente en una región europea.
-2. Abre **SQL Editor** y ejecuta [supabase/migrations/202608230001_parent_progress.sql](supabase/migrations/202608230001_parent_progress.sql).
+2. Abre **SQL Editor** y ejecuta, en orden, las migraciones de [`supabase/migrations`](supabase/migrations): esquema base, progreso bidireccional y corrección del reloj de restauración.
 3. En **Authentication > Sign In / Providers**, mantén activo Email y habilita **Anonymous Sign-Ins**.
 4. En **Authentication > URL Configuration**, configura la URL definitiva de la aplicación y añade `http://localhost:3000/**` para desarrollo. Para previews de Netlify puedes añadir `https://**--TU-SITIO.netlify.app/**`.
 5. Copia `.env.example` a `.env.local` para desarrollo y completa la URL del proyecto y su clave pública.
@@ -87,6 +89,9 @@ La misma base admite tantas aplicaciones como sean necesarias. Conserva un únic
 - `learner_devices`: instalaciones vinculadas mediante códigos temporales;
 - `learning_events`: actividades genéricas con aplicación, tema, puntuación, puntos, duración opcional y fecha;
 - `legacy_progress`: importación inicial del progreso que ya existía antes de vincular un dispositivo.
+- `learner_app_controls`: línea base y punto de corte después de reinicios o restauraciones;
+- `progress_backups`: copias recuperables, separadas por alumno y aplicación;
+- `learner_settings`: configuración parental del alumno, incluida la contraseña de reinicio.
 
 Para registrar una aplicación nueva se añade una fila al catálogo, por ejemplo:
 

@@ -20,6 +20,13 @@ export type CloudAttempt = {
 };
 
 const QUEUE_KEY = 'davids-nmg-cloud-queue-v1';
+let backupTransport: { url: string; key: string; token: string } | null = null;
+
+function rememberBackupTransport(token?: string) {
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const key = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
+  if (url && key && token) backupTransport = { url, key, token };
+}
 
 function readQueue(): CloudAttempt[] {
   if (typeof window === 'undefined') return [];
@@ -35,9 +42,10 @@ export async function ensureCloudSession() {
   const supabase = getSupabaseClient();
   if (!supabase) return null;
   const { data } = await supabase.auth.getSession();
-  if (data.session?.user) return data.session.user;
+  if (data.session?.user) { rememberBackupTransport(data.session.access_token); return data.session.user; }
   const result = await supabase.auth.signInAnonymously();
   if (result.error) throw result.error;
+  rememberBackupTransport(result.data.session?.access_token);
   return result.data.user;
 }
 
@@ -100,4 +108,50 @@ export async function flushAttemptQueue(): Promise<CloudState> {
   if (error) return 'error';
   saveQueue([]);
   return 'synced';
+}
+
+export async function getConsolidatedProgress<T>(learnerId: string, appKey = CURRENT_LEARNING_APP.key): Promise<T> {
+  const supabase = getSupabaseClient();
+  if (!supabase) throw new Error('Die Cloud-Verbindung ist noch nicht eingerichtet.');
+  const { data, error } = await supabase.rpc('get_consolidated_progress', {
+    p_learner_id: learnerId,
+    p_app_key: appKey,
+  });
+  if (error) throw error;
+  return data as T;
+}
+
+export async function saveProgressBackup(learnerId: string, snapshot: unknown, reason = 'autosave', appKey = CURRENT_LEARNING_APP.key) {
+  const supabase = getSupabaseClient();
+  if (!supabase) return;
+  const { error } = await supabase.rpc('save_progress_backup', {
+    p_learner_id: learnerId,
+    p_app_key: appKey,
+    p_snapshot: snapshot,
+    p_reason: reason,
+  });
+  if (error) throw error;
+}
+
+export function saveProgressBackupOnClose(learnerId: string, appKey = CURRENT_LEARNING_APP.key) {
+  if (!backupTransport || typeof fetch === 'undefined') return;
+  const { url, key, token } = backupTransport;
+  void fetch(`${url}/rest/v1/rpc/save_progress_backup`, {
+    method: 'POST',
+    keepalive: true,
+    headers: { apikey: key, Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+    body: JSON.stringify({ p_learner_id: learnerId, p_app_key: appKey, p_snapshot: null, p_reason: 'session_close' }),
+  }).catch(() => undefined);
+}
+
+export async function resetProgressWithPassword<T>(learnerId: string, password: string, appKey = CURRENT_LEARNING_APP.key): Promise<T> {
+  const supabase = getSupabaseClient();
+  if (!supabase) throw new Error('Die Cloud-Verbindung ist noch nicht eingerichtet.');
+  const { data, error } = await supabase.rpc('reset_progress_with_password', {
+    p_learner_id: learnerId,
+    p_app_key: appKey,
+    p_password: password,
+  });
+  if (error) throw error;
+  return data as T;
 }

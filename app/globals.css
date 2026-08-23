@@ -227,6 +227,20 @@ footer p { max-width:550px; margin:6px 0 0; line-height:1.5; }
 .pairingAction { min-width:250px; display:grid; justify-items:center; gap:7px; }
 .pairingAction code { padding:16px 21px; border:1px dashed #6e8a80; border-radius:13px; background:#fff; color:var(--teal-dark); font-family:ui-monospace,monospace; font-size:30px; font-weight:900; letter-spacing:.13em; }
 .pairingAction small { color:var(--muted); }
+.parentControlGrid { display:grid; grid-template-columns:.8fr 1.2fr; gap:17px; margin-top:17px; }
+.parentControlGrid .parentPanel { min-width:0; }
+.passwordPanel>p:not(.eyebrow),.backupPanel>p:not(.eyebrow,.emptyState) { color:var(--muted); line-height:1.55; }
+.passwordPanel form { display:grid; gap:9px; margin-top:20px; }
+.passwordPanel label { color:var(--teal-dark); font-size:13px; font-weight:850; }
+.passwordPanel form>div { display:grid; grid-template-columns:1fr auto; gap:9px; }
+.passwordPanel input { min-width:0; border:1px solid #bdcbc4; border-radius:13px; padding:13px 14px; background:#fff; color:var(--ink); font:700 17px ui-monospace,monospace; }
+.passwordPanel small { color:var(--muted); }
+.backupList { max-height:330px; overflow:auto; margin-top:18px; display:grid; }
+.backupList>div { display:flex; justify-content:space-between; align-items:center; gap:15px; padding:12px 0; border-bottom:1px solid var(--line); }
+.backupList>div>div { display:grid; gap:3px; }
+.backupList time { font-size:13px; font-weight:800; }
+.backupList small { color:var(--muted); }
+.compactButton { padding:9px 12px; font-size:12px; }
 .privacyRow { margin-top:17px; display:flex; justify-content:space-between; align-items:center; gap:30px; color:var(--muted); font-size:12px; }
 .privacyRow p { margin:0; }
 .privacyRow .dangerLink { margin:0; flex:0 0 auto; }
@@ -245,6 +259,7 @@ footer p { max-width:550px; margin:6px 0 0; line-height:1.5; }
   .parentStats { grid-template-columns:1fr 1fr; }
   .materialsGrid { grid-template-columns:1fr 1fr; }
   .parentGrid { grid-template-columns:1fr; }
+  .parentControlGrid { grid-template-columns:1fr; }
   .mobileNav { position:fixed; left:12px; right:12px; bottom:10px; z-index:10; display:grid; grid-template-columns:repeat(4,1fr); padding:7px; border:1px solid #d4ddd5; border-radius:18px; background:rgba(255,254,250,.94); box-shadow:0 12px 40px rgba(26,47,43,.2); backdrop-filter:blur(12px); }
   .mobileNav button { display:grid; gap:2px; justify-items:center; border:0; border-radius:12px; padding:6px; background:transparent; color:var(--muted); font-size:10px; font-weight:800; }
   .mobileNav button span { font-size:20px; }
@@ -289,6 +304,7 @@ footer p { max-width:550px; margin:6px 0 0; line-height:1.5; }
   .parentTopic .wideBar { grid-column:1/3; grid-row:2; }
   .pairingPanel { grid-template-columns:1fr; }
   .pairingAction { min-width:0; justify-items:start; }
+  .passwordPanel form>div { grid-template-columns:1fr; }
   .pairingAction code { font-size:25px; }
   .privacyRow { align-items:flex-start; flex-direction:column; }
   footer { display:block; padding:27px 18px 115px; }
