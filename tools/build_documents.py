@@ -72,7 +72,10 @@ def configure(doc, short_title):
     section = doc.sections[0]
     section.page_width = Cm(21)
     section.page_height = Cm(29.7)
-    section.top_margin = Cm(1.65)
+    # Keep a generous, consistent breathing space between the running header
+    # rule and the first title or paragraph on every page.
+    section.top_margin = Cm(2.35)
+    section.header_distance = Cm(0.8)
     section.bottom_margin = Cm(1.55)
     section.left_margin = Cm(1.75)
     section.right_margin = Cm(1.75)
@@ -138,12 +141,14 @@ def configure(doc, short_title):
     props.keywords = "NMG, Weltreligionen, 6. Klasse, Zug"
 
 
-def paragraph(doc, text="", bold=False, italic=False, color=None, size=None, align=None, after=None):
+def paragraph(doc, text="", bold=False, italic=False, color=None, size=None, align=None, after=None, keep_together=False):
     p = doc.add_paragraph()
     if align is not None:
         p.alignment = align
     if after is not None:
         p.paragraph_format.space_after = Pt(after)
+    if keep_together:
+        p.paragraph_format.keep_together = True
     run = p.add_run(text)
     run.bold = bold
     run.italic = italic
@@ -514,11 +519,11 @@ def build_spanish():
     return path
 
 
-def build_solutions():
+def build_solutions_german():
     doc = Document()
-    configure(doc, "Soluciones del folleto · Prüfung Teil 1")
-    cover(doc, "Lösungen · Soluciones", "Weltreligionen – Teil 1", "Selbstständig verständliche Lösungen und Lernantworten", "Deutsch und español para acompañar el estudio", "No sustituye las explicaciones del profesor")
-    h1(doc, "Hinweise / Indicaciones")
+    configure(doc, "Lösungen · NMG Religionen · Prüfung Teil 1")
+    cover(doc, "Lösungen · Prüfung 1", "Weltreligionen – Teil 1", "Selbstständig verständliche Lösungen und Lernantworten", "Für Eltern und Lernbegleitende", "Deutsch · Schweizer Schreibweise")
+    h1(doc, "Hinweise")
     callout(doc, "Umfang", "Gelöst werden die Unterrichtsaufgaben, soweit sie für Prüfung Teil 1 oder den gemeinsamen Überblick relevant sind. Jede Überschrift beschreibt die Aufgabe in Worten; alle Kernaussagen stehen direkt in diesem Dokument. Es werden weder Fotodateien noch Bildnummern benötigt. Offene persönliche Fragen haben keine einzige richtige Lösung.")
     bullets(doc, ["Kurze Lösungen genügen meist; vollständige Sätze sind bei Erklärfragen besser.", "Drei sachliche Hinweise sind markiert: Hira liegt bei Mekka; Symbolkarten vereinfachen; die 100er-Grafik ist eine Übung und keine aktuelle Weltstatistik."])
 
@@ -533,10 +538,10 @@ def build_solutions():
     h1(doc, "2. Lückentext: Grundwissen zu Weltreligionen")
     paragraph(doc, "Lösungswörter in Reihenfolge:", bold=True, color=DEEP)
     table(doc, ["1–8", "9–15", "16–22"], [["lateinischen\nhöhere Macht\nwissenschaftlich\nHalt\nWeltreligionen\nbesonders stark\neinen\nPolytheismus", "Wertvorstellungen\nCharakter\nVerhalten\nBauten\nKirche\nMoschee\nSynagoge", "Feiertagen\nTod\nunterschiedliche\nfrei wählen\ngar keine\nrespektieren\nbehandeln"]], [2.15, 2.15, 2.2], 9.5)
-    h2(doc, "Vollständige Kernaussage ohne Lückentext")
-    paragraph(doc, "Das Wort Religion hat einen lateinischen Ursprung. Viele Religionen beziehen sich auf eine höhere Macht oder auf das Heilige; solche Glaubensaussagen lassen sich nicht wie naturwissenschaftliche Aussagen beweisen. Religion kann Menschen Halt geben. Zu den fünf Weltreligionen zählen Christentum, Islam, Judentum, Hinduismus und Buddhismus. Monotheistische Religionen glauben an einen Gott; Polytheismus bezeichnet den Glauben an mehrere Gottheiten. Religionen prägen Wertvorstellungen, Charakter und Verhalten. Sichtbar werden sie auch in Bauten wie Kirche, Moschee und Synagoge sowie in Festen und Vorstellungen über Leben und Tod. Menschen dürfen ihren Glauben frei wählen oder keiner Religion angehören. Andere Überzeugungen sollen respektiert und Menschen fair behandelt werden.")
-
     page_break(doc)
+    h2(doc, "Vollständige Kernaussage ohne Lückentext")
+    paragraph(doc, "Das Wort Religion hat einen lateinischen Ursprung. Viele Religionen beziehen sich auf eine höhere Macht oder auf das Heilige; solche Glaubensaussagen lassen sich nicht wie naturwissenschaftliche Aussagen beweisen. Religion kann Menschen Halt geben. Zu den fünf Weltreligionen zählen Christentum, Islam, Judentum, Hinduismus und Buddhismus. Monotheistische Religionen glauben an einen Gott; Polytheismus bezeichnet den Glauben an mehrere Gottheiten. Religionen prägen Wertvorstellungen, Charakter und Verhalten. Sichtbar werden sie auch in Bauten wie Kirche, Moschee und Synagoge sowie in Festen und Vorstellungen über Leben und Tod. Menschen dürfen ihren Glauben frei wählen oder keiner Religion angehören. Andere Überzeugungen sollen respektiert und Menschen fair behandelt werden.", keep_together=True)
+
     h1(doc, "3. Verständnisfragen zum Grundtext")
     qblock(doc, [
         ("Was sind Religionen?", "Religionen sind Weltanschauungen und gelebte Traditionen. Oft gehört der Glaube an eine höhere Macht oder an das Heilige dazu; Religion prägt Werte, Rituale und Gemeinschaft."),
@@ -606,7 +611,163 @@ def build_solutions():
     ], answers=True)
     h2(doc, "Quellen")
     paragraph(doc, "Grundlage: die bereitgestellten Klassenmaterialien. Fachlicher Abgleich: Lehrplan 21 Kanton Zug, NMG.12.1, NMG.12.2 und NMG.12.5 (zg.lehrplan.ch). Die Lösungen folgen dem Prüfungswortschatz des Hefts und markieren sachliche Vereinfachungen.")
-    path = OUT / "Loesungen_Broschuere_Pruefung_1_DE_ES.docx"
+    path = OUT / "Loesungen_Pruefung_1_DE.docx"
+    doc.save(path)
+    return path
+
+
+def build_solutions_spanish():
+    doc = Document()
+    configure(doc, "Soluciones · NMG Religiones · Prueba 1")
+    cover(doc, "Soluciones · Prueba 1", "Religiones del mundo - Parte 1", "Soluciones completas y explicaciones autosuficientes", "Para familias y acompañantes del aprendizaje", "Español · términos del examen conservados en alemán", "- Solucionario de la primera prueba -")
+    h1(doc, "Indicaciones")
+    callout(doc, "Alcance", "Se resuelven las tareas de clase relevantes para la primera prueba o para el panorama común. Cada título describe la actividad con palabras y toda la información esencial aparece en este documento. No se necesitan fotografías ni nombres de archivos. Las preguntas personales abiertas no tienen una única respuesta correcta.")
+    bullets(doc, ["Para respuestas explicativas conviene escribir frases completas.", "Se señalan tres precisiones: Hira está cerca de La Meca; los símbolos simplifican; el gráfico de cien casillas es un ejercicio y no una estadística mundial actual."])
+
+    page_break(doc)
+    h1(doc, "1. Objetivos de la primera prueba")
+    h2(doc, "Contenido de la prueba 1")
+    bullets(doc, ["Común: cinco religiones del mundo, distribución general, Monotheismus/Polytheismus, preguntas y contenidos de clase.", "Cristianismo: características, Jesús e iglesia católica.", "Islam: características, Mahoma y mezquita.", "Judaísmo: características, normas y costumbres."])
+    callout(doc, "No se estudia en detalle", "Los bloques específicos de budismo e hinduismo pertenecen a la segunda prueba. En el panorama común sí pueden aparecer sus nombres, símbolos y distribución.")
+    h2(doc, "Respuesta modelo: monoteísmo y politeísmo")
+    paragraph(doc, "Monotheismus significa creer en un solo Dios. Judaísmo, cristianismo e islam son monoteístas. Polytheismus significa creer en varias divinidades. En hinduismo y budismo las etiquetas simples solo resultan parcialmente adecuadas.")
+
+    h1(doc, "2. Texto con huecos: conocimientos básicos")
+    paragraph(doc, "Palabras alemanas en el orden de los huecos:", bold=True, color=DEEP)
+    table(doc, ["1-8", "9-15", "16-22"], [["lateinischen\nhöhere Macht\nwissenschaftlich\nHalt\nWeltreligionen\nbesonders stark\neinen\nPolytheismus", "Wertvorstellungen\nCharakter\nVerhalten\nBauten\nKirche\nMoschee\nSynagoge", "Feiertagen\nTod\nunterschiedliche\nfrei wählen\ngar keine\nrespektieren\nbehandeln"]], [2.15, 2.15, 2.2], 9.5)
+    page_break(doc)
+    h2(doc, "Idea completa sin huecos")
+    paragraph(doc, "La palabra religión tiene un origen latino. Muchas religiones se refieren a un poder superior o a lo sagrado; esas afirmaciones de fe no se demuestran como una afirmación científica. La religión puede dar apoyo a las personas. Entre las cinco religiones del mundo se cuentan cristianismo, islam, judaísmo, hinduismo y budismo. Las religiones monoteístas creen en un Dios; el politeísmo designa la creencia en varias divinidades. Las religiones influyen en valores, carácter y comportamiento. También se hacen visibles en edificios como iglesia, mezquita y sinagoga, así como en fiestas e ideas sobre la vida y la muerte. Las personas pueden elegir libremente su fe o no pertenecer a ninguna religión. Deben respetarse otras convicciones y tratarse a todas las personas con justicia.", keep_together=True)
+
+    h1(doc, "3. Preguntas de comprensión del texto básico")
+    qblock(doc, [
+        ("¿Qué son las religiones?", "Son cosmovisiones y tradiciones vividas. A menudo incluyen la creencia en un poder superior o en lo sagrado y orientan valores, rituales y comunidad."),
+        ("¿Cómo se llaman las cinco religiones del mundo?", "Cristianismo, islam, judaísmo, hinduismo y budismo."),
+        ("¿Qué puede incluir la fe de una religión?", "Ideas sobre Dios o lo sagrado, valores y conducta, normas, costumbres, fiestas, oración, comunidad y preguntas sobre la vida y la muerte."),
+        ("Nombra un edificio religioso.", "Por ejemplo, iglesia, mezquita, sinagoga o templo."),
+    ], answers=True)
+    callout(doc, "Precisión", "El origen de la palabra 'religión' no sustituye una respuesta sobre el contenido de la fe. Se piden ideas, valores, conducta y práctica.", CREAM, GOLD)
+
+    h1(doc, "4. Mapa del mundo: colores, símbolos y distribución")
+    table(doc, ["Religión", "Color del mapa", "Símbolo del cuaderno", "Zona principal simplificada"], [["Judaísmo", "azul", "estrella de David", "Israel; presencia mundial"], ["Budismo", "naranja", "rueda del dharma", "Asia oriental y sudoriental"], ["Cristianismo", "violeta", "cruz", "Europa, América, partes de África y Australia"], ["Hinduismo", "amarillo", "Om", "India y Asia meridional"], ["Islam", "verde", "media luna", "norte de África, Asia occidental y meridional"]], [1.15, 1.15, 1.25, 3.0], 8.8)
+    paragraph(doc, "El mapa muestra zonas de concentración. Hoy existen comunidades de las cinco religiones en muchas regiones del mundo.", italic=True, color=MUTED, size=9)
+
+    page_break(doc)
+    h1(doc, "5. Gráfico de cien casillas sobre afiliación religiosa")
+    table(doc, ["Grupo del ejercicio", "Casillas", "Porcentaje del gráfico"], [["Cristianos", "31", "31 %"], ["Musulmanes", "23", "23 %"], ["Hindúes", "15", "15 %"], ["Judíos", "1", "1 %"], ["Budistas", "7", "7 %"], ["otra/ninguna religión", "23", "23 %"], ["Total", "100", "100 %"]], [2.8, 1.65, 2.05], 9.6)
+    callout(doc, "Importante", "Esta es la solución del gráfico dibujado de cien casillas. No es una estadística mundial actual fiable.", CREAM, GOLD)
+    h1(doc, "6. Preguntas personales sobre sentido y fe")
+    paragraph(doc, "Las respuestas personales son individuales. No existe una única solución correcta. Ejemplos posibles:")
+    table(doc, ["Pregunta", "Posible respuesta personal"], [["¿Cómo surgió el mundo?", "La ciencia explica procesos; las religiones también transmiten relatos de sentido y origen."], ["¿Cuál es el sentido de la vida?", "Para mí: cuidar relaciones, aprender, ayudar y asumir responsabilidad."], ["¿Existe Dios?", "Las personas responden de manera diferente. Puedo respetar convicciones que no comparto."], ["¿Cómo deben convivir las personas?", "Con justicia, paz, ayuda mutua y respeto."], ["¿Qué ocurre después de la muerte?", "Las religiones ofrecen respuestas distintas; no podemos saberlo con certeza."]], [2.0, 4.5], 9.1)
+
+    page_break(doc)
+    h1(doc, "7. Comparación de las cinco religiones")
+    table(doc, ["Religión", "Distribución", "Antigüedad", "Dios / personas", "Lugar", "Texto", "Normas / costumbres"], [["Cristianismo", "mundial", "unos 2000 años", "un Dios; Jesús", "iglesia", "Biblia", "amor al prójimo, fiestas"], ["Islam", "mundial", "unos 1400 años", "Alá; Mahoma", "mezquita", "Corán", "cinco pilares, Ramadán"], ["Judaísmo", "mundial", "más de 3000 años", "un Dios; Abraham/Moisés", "sinagoga", "Torá/Tanaj", "mandamientos, Shabat"], ["Budismo", "Asia; mundial", "unos 2500 años", "Buda; sin creador central", "templo", "textos", "óctuple sendero"], ["Hinduismo", "India; mundial", "más de 3000 años", "concepciones diversas", "templo", "p. ej. Vedas", "puja, fiestas"]], [.85, .85, .75, 1.25, .7, .85, 1.25], 7.4)
+    paragraph(doc, "Las antigüedades son aproximadas y sirven solo para orientarse.", italic=True, color=MUTED, size=8.5)
+    h1(doc, "8. Tareas sobre Jesús y el cristianismo")
+    table(doc, ["Tarea", "Solución breve"], [["¿Quién fue Jesús?", "Judío de Nazaret y predicador. Para la fe cristiana, Hijo de Dios/Dios hecho ser humano."], ["Mensaje", "Amor de Dios y del prójimo: 'Ama a tu prójimo como a ti mismo'."], ["Muerte", "Crucifixión en Jerusalén bajo dominio romano."], ["Después", "Fe cristiana: resurrección al tercer día, apariciones y ascensión."], ["Fiestas", "Navidad, Viernes Santo, Pascua y Ascensión."]], [1.4, 5.1], 9.3)
+    callout(doc, "Formulación precisa", "Históricamente, Jesús procedía de Nazaret. Según los evangelios nació en Belén. El material simplifica; para el examen se debe seguir la formulación utilizada en clase.", CREAM, GOLD)
+
+    page_break(doc)
+    h1(doc, "9. Tareas sobre Alá, Mahoma y el islam")
+    h2(doc, "Alá")
+    paragraph(doc, "Alá es la palabra árabe para Dios. En el islam hay un solo Dios. Los 99 nombres describen cualidades de Dios, por ejemplo, el Misericordioso o el Sabio.")
+    h2(doc, "Mahoma: respuestas del texto con huecos y crucigrama")
+    table(doc, ["N.º", "Respuesta alemana", "Relación"], [["1", "Gepriesene", "significado del nombre en el ejercicio"], ["2", "Arabien", "procedencia"], ["3", "Onkel", "crianza tras la muerte del abuelo"], ["4", "Predigten", "sermones cristianos"], ["5", "Höhle", "Hira, cerca de La Meca"], ["6", "Medina", "lugar de la emigración"], ["7", "Tod", "después de la muerte de su esposa"], ["Palabra final", "PROPHET", "mensajero que transmite el mensaje de Dios"]], [.8, 1.75, 3.95], 9.1)
+    callout(doc, "Error en la pregunta", "La cueva de Hira está cerca de La Meca. Si la tarea dice 'cerca de Medina', probablemente se trata de un error de impresión.", CREAM, GOLD)
+    h2(doc, "Respuesta modelo: ¿qué es un profeta?")
+    paragraph(doc, "Un profeta es una persona que, según la tradición religiosa, recibe y transmite el mensaje de Dios. En el islam Mahoma es considerado el último profeta.")
+
+    page_break(doc)
+    h1(doc, "10. Etiquetas necesarias para la primera prueba")
+    h2(doc, "Iglesia católica")
+    table(doc, ["Término alemán", "Explicación"], [["Altar", "mesa de la eucaristía"], ["Ambo", "ambón o atril de lecturas"], ["Tabernakel", "sagrario; conserva las hostias consagradas"], ["Taufbecken", "pila bautismal"], ["Kruzifix", "cruz con representación de Jesús"], ["Orgel", "órgano para la música del culto"], ["Weihwasser", "agua bendita en la entrada; recuerda el bautismo"]], [1.5, 5.0], 9.4)
+    h2(doc, "Mezquita")
+    table(doc, ["Término", "Explicación"], [["Mihrab", "nicho que señala la qibla"], ["Qibla", "dirección de la oración hacia La Meca"], ["Minbar", "púlpito"], ["Gebetsraum", "sala para la oración comunitaria"], ["Gebetsteppiche", "alfombras y filas de oración"], ["Waschung", "purificación ritual"], ["Minarett", "minarete; no todas las mezquitas tienen uno"]], [1.5, 5.0], 9.4)
+    h2(doc, "Sinagoga - panorama útil")
+    table(doc, ["Término", "Explicación"], [["Toraschrein", "arca donde se guardan los rollos de la Torá"], ["Bima", "plataforma de lectura"], ["Ewiges Licht", "luz cercana al arca de la Torá"]], [1.5, 5.0], 9.4)
+
+    page_break(doc)
+    h1(doc, "11. Control rápido para familias")
+    qblock(doc, [("¿Cuáles son las cinco religiones?", "Cristianismo, islam, judaísmo, hinduismo y budismo."), ("¿Cuáles se estudian en detalle?", "Cristianismo, islam y judaísmo."), ("¿Cuáles son monoteístas?", "Judaísmo, cristianismo e islam."), ("Cristianismo en tres palabras", "Kirche - Bibel - Jesus."), ("Islam en tres palabras", "Moschee - Koran - Mohammed."), ("Judaísmo en tres palabras", "Synagoge - Tora - Mose."), ("¿Hira?", "Cueva cerca de La Meca."), ("¿Pascua?", "Resurrección de Jesús según la fe cristiana.")], answers=True)
+    h2(doc, "Fuentes")
+    paragraph(doc, "Base: los materiales de clase facilitados. Revisión curricular: Lehrplan 21 del cantón de Zug, NMG.12.1, NMG.12.2 y NMG.12.5 (zg.lehrplan.ch). Las soluciones conservan el vocabulario alemán del examen y señalan simplificaciones importantes.")
+    path = OUT / "Soluciones_Prueba_1_ES.docx"
+    doc.save(path)
+    return path
+
+
+def build_solutions_english():
+    doc = Document()
+    configure(doc, "Solutions · NMG Religions · Test 1")
+    cover(doc, "Solutions · Test 1", "World religions - Part 1", "Complete, self-contained answers and explanations", "For families and learning supporters", "English · German exam terms retained", "- Answer guide for the first test -")
+    h1(doc, "How to use this guide")
+    callout(doc, "Scope", "This guide answers the class tasks that are relevant to Test 1 or to the shared overview. Every heading describes the task in words and all essential information appears in this document. No photographs or file names are required. Open personal questions do not have one single correct answer.")
+    bullets(doc, ["Full sentences are best for explanation questions.", "Three points are clarified: Hira is near Mecca; symbol cards simplify; the hundred-square chart is an exercise, not a current world statistic."])
+
+    page_break(doc)
+    h1(doc, "1. Learning goals for Test 1")
+    h2(doc, "Test 1 content")
+    bullets(doc, ["Shared overview: five world religions, broad distribution, Monotheismus/Polytheismus, questions and class content.", "Christianity: features, Jesus and a Catholic church.", "Islam: features, Mohammed and a mosque.", "Judaism: features, rules and customs."])
+    callout(doc, "Not studied in detail", "The separate Buddhism and Hinduism blocks belong to Test 2. Their names, symbols and broad distribution may still appear in the shared overview.")
+    h2(doc, "Model answer: monotheism and polytheism")
+    paragraph(doc, "Monotheismus means belief in one God. Judaism, Christianity and Islam are monotheistic. Polytheismus means belief in several deities. Simple labels are only partly suitable for Hinduism and Buddhism.")
+
+    h1(doc, "2. Gap-fill text: basic knowledge")
+    paragraph(doc, "German answer words in gap order:", bold=True, color=DEEP)
+    table(doc, ["1-8", "9-15", "16-22"], [["lateinischen\nhöhere Macht\nwissenschaftlich\nHalt\nWeltreligionen\nbesonders stark\neinen\nPolytheismus", "Wertvorstellungen\nCharakter\nVerhalten\nBauten\nKirche\nMoschee\nSynagoge", "Feiertagen\nTod\nunterschiedliche\nfrei wählen\ngar keine\nrespektieren\nbehandeln"]], [2.15, 2.15, 2.2], 9.5)
+    h2(doc, "Complete meaning without gaps")
+    paragraph(doc, "The word religion has a Latin origin. Many religions refer to a higher power or to the sacred; faith statements cannot be proved like scientific statements. Religion can give people support. The five world religions in this unit are Christianity, Islam, Judaism, Hinduism and Buddhism. Monotheistic religions believe in one God; polytheism means belief in several deities. Religions shape values, character and behaviour. They are also visible in buildings such as churches, mosques and synagogues, in festivals and in ideas about life and death. People may freely choose their faith or belong to no religion. Other convictions should be respected and people should be treated fairly.", keep_together=True)
+
+    page_break(doc)
+    h1(doc, "3. Comprehension questions about the basic text")
+    qblock(doc, [("What are religions?", "They are worldviews and lived traditions. They often include belief in a higher power or the sacred and shape values, rituals and community."), ("What are the five world religions in this unit?", "Christianity, Islam, Judaism, Hinduism and Buddhism."), ("What can religious belief include?", "Ideas about God or the sacred, values and behaviour, rules, customs, festivals, prayer, community, life and death."), ("Name one religious building.", "For example, a church, mosque, synagogue or temple.")], answers=True)
+    callout(doc, "Clarification", "The origin of the word 'religion' does not answer a question about the content of belief. The expected answer refers to ideas, values, behaviour and practice.", CREAM, GOLD)
+    h1(doc, "4. World map: colours, symbols and distribution")
+    table(doc, ["Religion", "Map colour", "Workbook symbol", "Simplified main area"], [["Judaism", "blue", "Star of David", "Israel; worldwide"], ["Buddhism", "orange", "Dharma wheel", "East and Southeast Asia"], ["Christianity", "violet", "cross", "Europe, the Americas, parts of Africa, Australia"], ["Hinduism", "yellow", "Om", "India and South Asia"], ["Islam", "green", "crescent", "North Africa, West and South Asia"]], [1.15, 1.15, 1.25, 3.0], 8.8)
+    paragraph(doc, "The map shows concentrations. Communities of all five religions live in many world regions today.", italic=True, color=MUTED, size=9)
+
+    page_break(doc)
+    h1(doc, "5. Hundred-square chart of religious affiliation")
+    table(doc, ["Group in the exercise", "Squares", "Chart percentage"], [["Christians", "31", "31 %"], ["Muslims", "23", "23 %"], ["Hindus", "15", "15 %"], ["Jews", "1", "1 %"], ["Buddhists", "7", "7 %"], ["other/no religion", "23", "23 %"], ["Total", "100", "100 %"]], [2.8, 1.65, 2.05], 9.6)
+    callout(doc, "Important", "This is the answer to the drawn hundred-square chart. It is not a reliable current world-population statistic.", CREAM, GOLD)
+    h1(doc, "6. Personal questions about meaning and faith")
+    paragraph(doc, "Personal answers differ. There is no single correct solution. Possible model responses:")
+    table(doc, ["Question", "Possible personal response"], [["How did the world begin?", "Science explains processes; religions also pass on stories about meaning and origins."], ["What is the meaning of life?", "For me: care for relationships, learn, help and take responsibility."], ["Does God exist?", "People answer differently. I can respect convictions that I do not share."], ["How should people live together?", "Fairly, peacefully, helpfully and respectfully."], ["What happens after death?", "Religions give different answers; we cannot know with certainty."]], [2.0, 4.5], 9.1)
+
+    page_break(doc)
+    h1(doc, "7. Comparison of the five religions")
+    table(doc, ["Religion", "Distribution", "Age", "God / people", "Place", "Text", "Rules / customs"], [["Christianity", "worldwide", "about 2,000 years", "one God; Jesus", "church", "Bible", "love of neighbour, festivals"], ["Islam", "worldwide", "about 1,400 years", "Allah; Mohammed", "mosque", "Quran", "five pillars, Ramadan"], ["Judaism", "worldwide", "over 3,000 years", "one God; Abraham/Moses", "synagogue", "Torah/Tanakh", "commandments, Shabbat"], ["Buddhism", "Asia; worldwide", "about 2,500 years", "Buddha; no central creator", "temple", "teachings", "Eightfold Path"], ["Hinduism", "India; worldwide", "over 3,000 years", "diverse concepts", "temple", "e.g. Vedas", "puja, festivals"]], [.85, .85, .75, 1.25, .7, .85, 1.25], 7.4)
+    paragraph(doc, "Ages are rounded and are provided only as orientation.", italic=True, color=MUTED, size=8.5)
+    h1(doc, "8. Tasks about Jesus and Christianity")
+    table(doc, ["Task", "Short answer"], [["Who was Jesus?", "A Jew from Nazareth and a preacher. In Christian belief, the Son of God/God as a human being."], ["Message", "God's love and love of neighbour: 'Love your neighbour as yourself.'"], ["Death", "Crucified in Jerusalem under Roman rule."], ["Afterwards", "Christian belief: resurrection on the third day, appearances and ascension."], ["Festivals", "Christmas, Good Friday, Easter and Ascension."]], [1.4, 5.1], 9.3)
+    callout(doc, "Precise wording", "Historically, Jesus came from Nazareth. According to the Gospels, he was born in Bethlehem. The class sheet simplifies; follow the wording used in class for the test.", CREAM, GOLD)
+
+    page_break(doc)
+    h1(doc, "9. Tasks about Allah, Mohammed and Islam")
+    h2(doc, "Allah")
+    paragraph(doc, "Allah is the Arabic word for God. Islam teaches belief in one God. The 99 names describe qualities of God, such as the Merciful or the All-Knowing.")
+    h2(doc, "Mohammed: gap-fill and crossword answers")
+    table(doc, ["No.", "German answer", "Connection"], [["1", "Gepriesene", "meaning of the name in the exercise"], ["2", "Arabien", "origin"], ["3", "Onkel", "care after his grandfather's death"], ["4", "Predigten", "Christian sermons"], ["5", "Höhle", "Hira near Mecca"], ["6", "Medina", "destination of the migration"], ["7", "Tod", "after his wife's death"], ["Final word", "PROPHET", "messenger who passes on God's message"]], [.8, 1.75, 3.95], 9.1)
+    callout(doc, "Error in the question", "The cave of Hira is near Mecca. If the task says 'near Medina', this is very likely a printing error.", CREAM, GOLD)
+    h2(doc, "Model answer: what is a prophet?")
+    paragraph(doc, "A prophet is a person who, according to religious tradition, receives and passes on God's message. In Islam, Mohammed is regarded as the final prophet.")
+
+    page_break(doc)
+    h1(doc, "10. Labels needed for Test 1")
+    h2(doc, "Catholic church")
+    table(doc, ["German term", "Explanation"], [["Altar", "table used for the Eucharist"], ["Ambo", "lectern for readings"], ["Tabernakel", "place where consecrated hosts are kept"], ["Taufbecken", "baptismal font"], ["Kruzifix", "cross showing Jesus"], ["Orgel", "organ used in worship and singing"], ["Weihwasser", "holy water near the entrance; recalls baptism"]], [1.5, 5.0], 9.4)
+    h2(doc, "Mosque")
+    table(doc, ["Term", "Explanation"], [["Mihrab", "prayer niche showing the qibla"], ["Qibla", "direction of prayer towards Mecca"], ["Minbar", "pulpit"], ["Gebetsraum", "space for communal prayer"], ["Gebetsteppiche", "prayer places and rows"], ["Waschung", "ritual washing"], ["Minarett", "minaret; not every mosque has one"]], [1.5, 5.0], 9.4)
+    h2(doc, "Synagogue - useful overview")
+    table(doc, ["Term", "Explanation"], [["Toraschrein", "ark where Torah scrolls are kept"], ["Bima", "raised reading platform"], ["Ewiges Licht", "light near the Torah ark"]], [1.5, 5.0], 9.4)
+
+    page_break(doc)
+    h1(doc, "11. Quick family check")
+    qblock(doc, [("Which five religions?", "Christianity, Islam, Judaism, Hinduism and Buddhism."), ("Which three in detail?", "Christianity, Islam and Judaism."), ("Which three are monotheistic?", "Judaism, Christianity and Islam."), ("Christianity in three words", "Kirche - Bibel - Jesus."), ("Islam in three words", "Moschee - Koran - Mohammed."), ("Judaism in three words", "Synagoge - Tora - Mose."), ("Hira?", "A cave near Mecca."), ("Easter?", "The resurrection of Jesus according to Christian belief.")], answers=True)
+    h2(doc, "Sources")
+    paragraph(doc, "Based on the supplied class materials. Curriculum cross-check: Lehrplan 21 for the Canton of Zug, NMG.12.1, NMG.12.2 and NMG.12.5 (zg.lehrplan.ch). The guide retains the German exam vocabulary and flags important simplifications.")
+    path = OUT / "Solutions_Test_1_EN.docx"
     doc.save(path)
     return path
 
@@ -692,5 +853,13 @@ def build_family_english():
 
 
 if __name__ == "__main__":
-    for result in (build_german(), build_spanish(), build_solutions(), build_family_german(), build_family_english()):
+    for result in (
+        build_german(),
+        build_spanish(),
+        build_solutions_german(),
+        build_solutions_spanish(),
+        build_solutions_english(),
+        build_family_german(),
+        build_family_english(),
+    ):
         print(result)

@@ -44,4 +44,6 @@ qa/
 site-archive/
 *.zip
 *.tsbuildinfo
+__pycache__/
+*.pyc
 ~$*.docx

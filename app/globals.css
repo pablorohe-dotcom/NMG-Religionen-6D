@@ -172,6 +172,10 @@ footer p { max-width:550px; margin:6px 0 0; line-height:1.5; }
 
 /* Privater Elternbereich */
 .parentShell { width:min(1180px,calc(100% - 42px)); margin:0 auto; padding:52px 0 80px; }
+.parentLanguageRow { margin-bottom:22px; display:flex; justify-content:flex-end; align-items:center; gap:10px; color:var(--muted); font-size:12px; font-weight:800; }
+.languageSwitcher { display:flex; gap:3px; padding:3px; border:1px solid var(--line); border-radius:999px; background:rgba(255,255,255,.72); }
+.languageSwitcher button { min-width:40px; border:0; border-radius:999px; padding:7px 9px; background:transparent; color:var(--muted); cursor:pointer; font-size:11px; font-weight:900; }
+.languageSwitcher button.active { background:var(--teal-dark); color:#fff; }
 .parentHeader { display:flex; justify-content:space-between; align-items:flex-end; gap:40px; margin-bottom:30px; }
 .parentHeader h1,.parentLogin h1 { max-width:none; font-size:clamp(43px,5.5vw,68px); }
 .parentHeader p:last-child { margin:15px 0 0; color:var(--muted); font-size:17px; }
@@ -192,7 +196,7 @@ footer p { max-width:550px; margin:6px 0 0; line-height:1.5; }
 .materialsHeading { display:flex; align-items:flex-end; justify-content:space-between; gap:30px; margin-bottom:19px; }
 .materialsHeading h2 { margin:0; font-family:Georgia,serif; font-size:29px; }
 .materialsHeading>p { max-width:500px; margin:0; color:var(--muted); line-height:1.55; }
-.materialsGrid { display:grid; grid-template-columns:repeat(4,1fr); gap:11px; }
+.materialsGrid { display:grid; grid-template-columns:repeat(3,1fr); gap:11px; }
 .materialCard { min-height:184px; padding:17px; display:flex; flex-direction:column; align-items:flex-start; border:1px solid var(--line); border-radius:16px; background:#f8faf6; color:var(--ink); text-decoration:none; transition:transform .18s ease,border-color .18s ease; }
 .materialCard:hover { border-color:var(--teal); transform:translateY(-2px); }
 .materialLanguage { margin-bottom:14px; padding:4px 7px; border-radius:999px; color:#fff; background:var(--teal); font-size:10px; font-weight:900; letter-spacing:.08em; }
@@ -271,6 +275,7 @@ footer p { max-width:550px; margin:6px 0 0; line-height:1.5; }
   .syncBanner { grid-template-columns:35px 1fr; }
   .syncBanner>b { display:none; }
   .parentShell { width:calc(100% - 28px); padding-top:28px; }
+  .parentLanguageRow { margin-bottom:18px; }
   .parentHeader { display:block; }
   .parentHeader h1,.parentLogin h1 { font-size:42px; }
   .parentActions { margin-top:20px; align-items:flex-start; flex-direction:column; }

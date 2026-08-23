@@ -21,10 +21,12 @@ La guía para instalarla como aplicación en macOS y Windows está en [deliverab
 
 - [Lernheft_Pruefung_1_David_DE.docx](deliverables/Lernheft_Pruefung_1_David_DE.docx): cuaderno de estudio para David en alemán.
 - [Material_estudio_y_guia_padres_Prueba_1_ES.docx](deliverables/Material_estudio_y_guia_padres_Prueba_1_ES.docx): material de estudio y guía para padres en español.
-- [Loesungen_Broschuere_Pruefung_1_DE_ES.docx](deliverables/Loesungen_Broschuere_Pruefung_1_DE_ES.docx): soluciones y explicaciones autosuficientes en alemán y español; no requieren las fotografías originales ni sus nombres de archivo.
+- [Loesungen_Pruefung_1_DE.docx](deliverables/Loesungen_Pruefung_1_DE.docx): soluciones autosuficientes en alemán.
+- [Soluciones_Prueba_1_ES.docx](deliverables/Soluciones_Prueba_1_ES.docx): soluciones autosuficientes en español.
+- [Solutions_Test_1_EN.docx](deliverables/Solutions_Test_1_EN.docx): soluciones autosuficientes en inglés.
 - [Praxisleitfaden_Familie_Pruefung_1_DE.docx](deliverables/Praxisleitfaden_Familie_Pruefung_1_DE.docx): guía práctica para familias en alemán.
 - [Practical_Family_Guide_Test_1_EN.docx](deliverables/Practical_Family_Guide_Test_1_EN.docx): guía práctica para familias en inglés.
-- [`public/materials`](public/materials): las cinco versiones PDF descargables que utiliza la aplicación.
+- [`public/materials`](public/materials): las versiones PDF descargables que utiliza la aplicación.
 - [build_documents.py](tools/build_documents.py): generador reproducible de los documentos Word.
 
 ## Ejecutar localmente
@@ -54,10 +56,11 @@ La aplicación es una PWA: en Chrome o Edge puede instalarse desde el icono de i
 
 La ruta `/parent` contiene una **central de aprendizaje familiar** protegida mediante enlace mágico por correo. Desde ella se puede:
 
+- cambiar toda la interfaz entre alemán, español e inglés; el idioma inicial es alemán;
 - consultar precisión, preguntas practicadas, estrellas y última actividad;
 - ver el dominio de cada tema y los últimos días de entrenamiento;
 - generar un código temporal para vincular el dispositivo de David;
-- descargar soluciones y guías familiares en español, alemán e inglés;
+- descargar únicamente las soluciones y guías correspondientes al idioma seleccionado;
 - eliminar todo el progreso sincronizado.
 
 El selector superior separa los resultados por aplicación y asignatura. NMG Religiones es la primera aplicación registrada, pero el modelo de datos no depende de esa materia.
