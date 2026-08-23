@@ -2,5 +2,5 @@
   command = "pnpm build:netlify"
 
 [build.environment]
-  NODE_VERSION = "22.13.0"
+  NODE_VERSION = "24.19.0"
   PNPM_VERSION = "11.19.0"
