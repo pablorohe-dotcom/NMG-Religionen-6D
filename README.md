@@ -13,7 +13,7 @@ La aplicación entrena de forma progresiva los objetivos de la primera prueba:
 - funcionamiento sin conexión después de la primera carga;
 - progreso local sin conexión y sincronización opcional con un panel privado para padres.
 
-Versión web privada: [Davids Weltreligionen-Training](https://nmg-weltreligionen-training-zug-6.pablorohe.chatgpt.site)
+Versión web: [Davids Weltreligionen-Training](https://nmg-religionen-6d.netlify.app/)
 
 La guía para instalarla como aplicación en macOS y Windows está en [deliverables/Guia_instalacion_app_Mac_Windows_Web.md](deliverables/Guia_instalacion_app_Mac_Windows_Web.md).
 
@@ -21,7 +21,10 @@ La guía para instalarla como aplicación en macOS y Windows está en [deliverab
 
 - [Lernheft_Pruefung_1_David_DE.docx](deliverables/Lernheft_Pruefung_1_David_DE.docx): cuaderno de estudio para David en alemán.
 - [Material_estudio_y_guia_padres_Prueba_1_ES.docx](deliverables/Material_estudio_y_guia_padres_Prueba_1_ES.docx): material de estudio y guía para padres en español.
-- [Loesungen_Broschuere_Pruefung_1_DE_ES.docx](deliverables/Loesungen_Broschuere_Pruefung_1_DE_ES.docx): soluciones razonadas del folleto en alemán y español.
+- [Loesungen_Broschuere_Pruefung_1_DE_ES.docx](deliverables/Loesungen_Broschuere_Pruefung_1_DE_ES.docx): soluciones y explicaciones autosuficientes en alemán y español; no requieren las fotografías originales ni sus nombres de archivo.
+- [Praxisleitfaden_Familie_Pruefung_1_DE.docx](deliverables/Praxisleitfaden_Familie_Pruefung_1_DE.docx): guía práctica para familias en alemán.
+- [Practical_Family_Guide_Test_1_EN.docx](deliverables/Practical_Family_Guide_Test_1_EN.docx): guía práctica para familias en inglés.
+- [`public/materials`](public/materials): las cinco versiones PDF descargables que utiliza la aplicación.
 - [build_documents.py](tools/build_documents.py): generador reproducible de los documentos Word.
 
 ## Ejecutar localmente
@@ -54,6 +57,7 @@ La ruta `/parent` contiene una **central de aprendizaje familiar** protegida med
 - consultar precisión, preguntas practicadas, estrellas y última actividad;
 - ver el dominio de cada tema y los últimos días de entrenamiento;
 - generar un código temporal para vincular el dispositivo de David;
+- descargar soluciones y guías familiares en español, alemán e inglés;
 - eliminar todo el progreso sincronizado.
 
 El selector superior separa los resultados por aplicación y asignatura. NMG Religiones es la primera aplicación registrada, pero el modelo de datos no depende de esa materia.

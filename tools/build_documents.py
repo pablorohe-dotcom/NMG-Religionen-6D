@@ -154,12 +154,12 @@ def paragraph(doc, text="", bold=False, italic=False, color=None, size=None, ali
     return p
 
 
-def cover(doc, kicker, title, subtitle, audience, language_line):
+def cover(doc, kicker, title, subtitle, audience, language_line, package_line="—  Lernpaket zur ersten Prüfung  —"):
     paragraph(doc, "", after=76)
     paragraph(doc, kicker.upper(), bold=True, color=GOLD, size=10, align=WD_ALIGN_PARAGRAPH.CENTER, after=18)
     paragraph(doc, title, bold=True, color=DARK, size=30, align=WD_ALIGN_PARAGRAPH.CENTER, after=9)
     paragraph(doc, subtitle, color="2B5163", size=15, align=WD_ALIGN_PARAGRAPH.CENTER, after=30)
-    paragraph(doc, "—  Lernpaket zur ersten Prüfung  —", color=GOLD, size=10.5, align=WD_ALIGN_PARAGRAPH.CENTER, after=72)
+    paragraph(doc, package_line, color=GOLD, size=10.5, align=WD_ALIGN_PARAGRAPH.CENTER, after=72)
     paragraph(doc, "DAVID · 6. KLASSE · KANTON ZUG", bold=True, color=DARK, size=11.5, align=WD_ALIGN_PARAGRAPH.CENTER, after=5)
     paragraph(doc, audience, italic=True, color=MUTED, size=9.5, align=WD_ALIGN_PARAGRAPH.CENTER, after=17)
     paragraph(doc, language_line, color=TEAL, size=9.5, align=WD_ALIGN_PARAGRAPH.CENTER)
@@ -517,25 +517,27 @@ def build_spanish():
 def build_solutions():
     doc = Document()
     configure(doc, "Soluciones del folleto · Prüfung Teil 1")
-    cover(doc, "Lösungen · Soluciones", "Weltreligionen – Teil 1", "Antwortschlüssel zu den fotografierten Arbeitsblättern", "Deutsch und español para acompañar el estudio", "No sustituye las explicaciones del profesor")
+    cover(doc, "Lösungen · Soluciones", "Weltreligionen – Teil 1", "Selbstständig verständliche Lösungen und Lernantworten", "Deutsch und español para acompañar el estudio", "No sustituye las explicaciones del profesor")
     h1(doc, "Hinweise / Indicaciones")
-    callout(doc, "Umfang", "Gelöst werden die auf den Fotos sichtbaren Aufgaben, soweit sie für Prüfung Teil 1 oder den gemeinsamen Überblick relevant sind. Offene persönliche Fragen haben keine einzige richtige Lösung.")
-    bullets(doc, ["Die Bildnummern beziehen sich auf die heruntergeladenen Fotos (IMG_2394 bis IMG_2414).", "Kurze Lösungen genügen meist; vollständige Sätze sind bei Erklärfragen besser.", "Drei sachliche Hinweise sind markiert: Hira liegt bei Mekka; Symbolkarten vereinfachen; die 100er-Grafik ist eine Übung und keine aktuelle Weltstatistik."])
+    callout(doc, "Umfang", "Gelöst werden die Unterrichtsaufgaben, soweit sie für Prüfung Teil 1 oder den gemeinsamen Überblick relevant sind. Jede Überschrift beschreibt die Aufgabe in Worten; alle Kernaussagen stehen direkt in diesem Dokument. Es werden weder Fotodateien noch Bildnummern benötigt. Offene persönliche Fragen haben keine einzige richtige Lösung.")
+    bullets(doc, ["Kurze Lösungen genügen meist; vollständige Sätze sind bei Erklärfragen besser.", "Drei sachliche Hinweise sind markiert: Hira liegt bei Mekka; Symbolkarten vereinfachen; die 100er-Grafik ist eine Übung und keine aktuelle Weltstatistik."])
 
     page_break(doc)
-    h1(doc, "1. Lernziele (IMG_2394)")
+    h1(doc, "1. Lernziele für Prüfung Teil 1")
     h2(doc, "Prüfung Teil 1")
     bullets(doc, ["Gemeinsam: fünf Weltreligionen, grobe Verbreitung, Monotheismus/Polytheismus, Fragen und Unterrichtsinhalte.", "Christentum: Merkmale, Jesus, katholische Kirche.", "Islam: Merkmale, Mohammed, Moschee.", "Judentum: Merkmale, Regeln und Bräuche."])
     callout(doc, "Nicht im Detail für Teil 1", "Die eigenen Detailblöcke zu Buddhismus und Hinduismus sind grün markiert und gehören zu Prüfung Teil 2. Im gemeinsamen Überblick können Namen, Symbole und Verbreitung trotzdem vorkommen.")
     h2(doc, "Musterantwort: Monotheismus / Polytheismus")
     paragraph(doc, "Monotheismus bedeutet Glaube an einen Gott. Judentum, Christentum und Islam sind monotheistisch. Polytheismus bedeutet Glaube an mehrere Gottheiten. Bei Hinduismus und Buddhismus sind einfache Etiketten nur begrenzt passend.")
 
-    h1(doc, "2. Lückentext Weltreligionen (IMG_2399–2402)")
+    h1(doc, "2. Lückentext: Grundwissen zu Weltreligionen")
     paragraph(doc, "Lösungswörter in Reihenfolge:", bold=True, color=DEEP)
     table(doc, ["1–8", "9–15", "16–22"], [["lateinischen\nhöhere Macht\nwissenschaftlich\nHalt\nWeltreligionen\nbesonders stark\neinen\nPolytheismus", "Wertvorstellungen\nCharakter\nVerhalten\nBauten\nKirche\nMoschee\nSynagoge", "Feiertagen\nTod\nunterschiedliche\nfrei wählen\ngar keine\nrespektieren\nbehandeln"]], [2.15, 2.15, 2.2], 9.5)
+    h2(doc, "Vollständige Kernaussage ohne Lückentext")
+    paragraph(doc, "Das Wort Religion hat einen lateinischen Ursprung. Viele Religionen beziehen sich auf eine höhere Macht oder auf das Heilige; solche Glaubensaussagen lassen sich nicht wie naturwissenschaftliche Aussagen beweisen. Religion kann Menschen Halt geben. Zu den fünf Weltreligionen zählen Christentum, Islam, Judentum, Hinduismus und Buddhismus. Monotheistische Religionen glauben an einen Gott; Polytheismus bezeichnet den Glauben an mehrere Gottheiten. Religionen prägen Wertvorstellungen, Charakter und Verhalten. Sichtbar werden sie auch in Bauten wie Kirche, Moschee und Synagoge sowie in Festen und Vorstellungen über Leben und Tod. Menschen dürfen ihren Glauben frei wählen oder keiner Religion angehören. Andere Überzeugungen sollen respektiert und Menschen fair behandelt werden.")
 
     page_break(doc)
-    h1(doc, "3. Fragen zum Grundtext (IMG_2403)")
+    h1(doc, "3. Verständnisfragen zum Grundtext")
     qblock(doc, [
         ("Was sind Religionen?", "Religionen sind Weltanschauungen und gelebte Traditionen. Oft gehört der Glaube an eine höhere Macht oder an das Heilige dazu; Religion prägt Werte, Rituale und Gemeinschaft."),
         ("Wie heissen die fünf Weltreligionen?", "Christentum, Islam, Judentum, Hinduismus und Buddhismus."),
@@ -544,20 +546,20 @@ def build_solutions():
     ], answers=True)
     callout(doc, "Korrektur zur Notiz", "Die Herleitung des Wortes „Religion“ ersetzt keine Antwort auf die Frage nach den Inhalten des Glaubens. Gefragt sind Vorstellungen, Werte, Verhalten und Praxis.", CREAM, GOLD)
 
-    h1(doc, "4. Karte und Symbole (IMG_2404–2405)")
+    h1(doc, "4. Weltkarte: Farben, Symbole und Verbreitung")
     table(doc, ["Religion", "Farbe auf der Karte", "Symbol im Heft", "Schwerpunkt vereinfacht"], [["Judentum", "blau", "Davidstern", "Israel; weltweit"], ["Buddhismus", "orange", "Dharma-Rad", "Ost-/Südostasien"], ["Christentum", "violett", "Kreuz", "Europa, Amerika, Teile Afrikas, Australien"], ["Hinduismus", "gelb", "Om", "Indien/Südasien"], ["Islam", "grün", "Halbmond", "Nordafrika, West- und Südasien"]], [1.15, 1.15, 1.25, 3.0], 9.0)
     paragraph(doc, "Die Karte zeigt Schwerpunkte. Heute leben Angehörige aller fünf Religionen in vielen Weltregionen.", italic=True, color=MUTED, size=9)
 
     page_break(doc)
-    h1(doc, "5. 100er-Grafik (IMG_2406)")
+    h1(doc, "5. 100er-Grafik zur religiösen Zugehörigkeit")
     table(doc, ["Gruppe im Arbeitsblatt", "Anzahl Felder", "Prozent der Grafik"], [["Christen", "31", "31 %"], ["Muslime", "23", "23 %"], ["Hindus", "15", "15 %"], ["Juden", "1", "1 %"], ["Buddhisten", "7", "7 %"], ["andere/keine Religion", "23", "23 %"], ["Summe", "100", "100 %"]], [2.8, 1.65, 2.05], 9.6)
     callout(doc, "Wichtig", "Das ist die Lösung der gezeichneten 100er-Grafik. Sie ist keine verlässliche aktuelle Weltbevölkerungsstatistik.", CREAM, GOLD)
-    h1(doc, "6. Fragen der Religionen (IMG_2407)")
+    h1(doc, "6. Persönliche Sinn- und Glaubensfragen")
     paragraph(doc, "Die persönlichen Antworten sind individuell. Es gibt nicht nur eine richtige Lösung. Eine mögliche Musterantwort:")
     table(doc, ["Frage", "Mögliche persönliche Antwort"], [["Wie entstand die Welt?", "Die Naturwissenschaft erklärt Entwicklungen; Religionen erzählen zusätzlich Sinn- und Ursprungsgeschichten."], ["Was ist der Sinn des Lebens?", "Für mich: Beziehungen pflegen, lernen, helfen und Verantwortung übernehmen."], ["Gibt es Gott?", "Menschen antworten verschieden. Ich kann Überzeugungen respektieren, auch wenn ich sie nicht teile."], ["Wie sollen Menschen zusammenleben?", "Fair, friedlich, hilfsbereit und mit Respekt."], ["Was kommt nach dem Tod?", "Religionen geben unterschiedliche Antworten; sicher wissen können wir es nicht."]], [2.0, 4.5], 9.2)
 
     page_break(doc)
-    h1(doc, "7. Übersichtstabelle (IMG_2408–2409)")
+    h1(doc, "7. Vergleichstabelle der fünf Weltreligionen")
     table(doc, ["Religion", "Verbreitung", "Alter/Zeit", "Gott / Personen", "Haus", "Schrift", "Regeln/Bräuche"], [
         ["Christentum", "weltweit", "ca. 2000 J.", "ein Gott; Jesus", "Kirche", "Bibel", "Nächstenliebe, Feste"],
         ["Islam", "weltweit", "ca. 1400 J.", "Allah; Mohammed", "Moschee", "Koran", "fünf Säulen, Ramadan"],
@@ -567,12 +569,12 @@ def build_solutions():
     ], [.85, .85, .75, 1.25, .7, .85, 1.25], 7.7)
     paragraph(doc, "Altersangaben sind gerundet und dienen nur der Orientierung.", italic=True, color=MUTED, size=8.5)
 
-    h1(doc, "8. Jesus (IMG_2395–2397)")
+    h1(doc, "8. Aufgaben zu Jesus und dem Christentum")
     table(doc, ["Aufgabe", "Kurzlösung"], [["Wer war Jesus?", "Jude aus Nazareth; Prediger. Im christlichen Glauben Sohn Gottes/Gott in menschlicher Gestalt."], ["Botschaft", "Gottes Liebe und Nächstenliebe: „Liebe deinen Nächsten wie dich selbst.“"], ["Tod", "Kreuzigung in Jerusalem unter römischer Herrschaft."], ["Danach", "Christlicher Glaube: Auferstehung am dritten Tag; Erscheinungen; Himmelfahrt."], ["Feste", "Weihnachten, Karfreitag, Ostern, Himmelfahrt."]], [1.4, 5.1], 9.4)
     callout(doc, "Präzise Formulierung", "Historisch: Jesus stammte aus Nazareth. Nach den Evangelien wurde er in Bethlehem geboren. Das Blatt formuliert vereinfacht; für die Prüfung die Unterrichtsformulierung beachten.", CREAM, GOLD)
 
     page_break(doc)
-    h1(doc, "9. Allah und Mohammed (IMG_2412–2414)")
+    h1(doc, "9. Aufgaben zu Allah, Mohammed und dem Islam")
     h2(doc, "Allah")
     paragraph(doc, "Allah ist das arabische Wort für Gott. Im Islam gibt es nur einen Gott. Die 99 Namen beschreiben Eigenschaften Gottes, zum Beispiel der Barmherzige oder der Wissende.")
     h2(doc, "Mohammed – Lückenantworten / Kreuzworträtsel")
@@ -603,12 +605,92 @@ def build_solutions():
         ("Ostern?", "Auferstehung Jesu nach christlichem Glauben."),
     ], answers=True)
     h2(doc, "Quellen")
-    paragraph(doc, "Grundlage: die vom Benutzer bereitgestellten Fotos des Klassenmaterials. Fachlicher Abgleich: Lehrplan 21 Kanton Zug, NMG.12.1, NMG.12.2 und NMG.12.5 (zg.lehrplan.ch). Die Lösungen folgen dem Prüfungswortschatz des Hefts und markieren sachliche Vereinfachungen.")
+    paragraph(doc, "Grundlage: die bereitgestellten Klassenmaterialien. Fachlicher Abgleich: Lehrplan 21 Kanton Zug, NMG.12.1, NMG.12.2 und NMG.12.5 (zg.lehrplan.ch). Die Lösungen folgen dem Prüfungswortschatz des Hefts und markieren sachliche Vereinfachungen.")
     path = OUT / "Loesungen_Broschuere_Pruefung_1_DE_ES.docx"
     doc.save(path)
     return path
 
 
+def build_family_german():
+    doc = Document()
+    configure(doc, "Praxisleitfaden für Familien · NMG Religionen")
+    cover(doc, "Familienbegleitung · Prüfung 1", "Gemeinsam sicher lernen", "Praktischer Leitfaden für Eltern und Lernbegleitende", "Für Familien von Kindern in der 6. Klasse", "Deutsch · Schweizer Schreibweise")
+    h1(doc, "1. Das Ziel")
+    callout(doc, "Weniger ist mehr", "Kurze, regelmässige Einheiten wirken besser als langes Auswendiglernen. Das Kind soll erklären, vergleichen, beschriften und eigene Fehler nach einer Pause nochmals lösen.")
+    h2(doc, "Was für Prüfung Teil 1 wichtig ist")
+    bullets(doc, ["Überblick über fünf Weltreligionen: Namen, Symbole und grobe Verbreitung.", "Monotheismus und Polytheismus verständlich erklären.", "Christentum, Islam und Judentum im Detail vergleichen.", "Stationen aus dem Leben Jesu und Mohammeds erzählen.", "Kirche, Moschee und Synagoge mit wichtigen Begriffen erkennen.", "Historische Aussagen und Glaubensaussagen respektvoll unterscheiden."])
+    h2(doc, "Die Rolle der Erwachsenen")
+    bullets(doc, ["Fragen stellen, statt lange zu erklären.", "Nur eine falsche Idee auf einmal korrigieren.", "Das Kind die verbesserte Antwort in eigenen Worten wiederholen lassen.", "Mit einem sichtbaren Erfolg abschliessen."])
+
+    page_break(doc)
+    h1(doc, "2. Die 15-Minuten-Routine")
+    table(doc, ["Minuten", "Aktivität", "Beispiel"], [["0–3", "Abrufen ohne Unterlagen", "Nenne alles, was du über den Islam noch weisst."], ["3–7", "Eine Lernkarte klären", "Was ist der Unterschied zwischen Kirche und Synagoge?"], ["7–12", "App oder mündliche Fragen", "5–8 kurze Aufgaben beantworten."], ["12–14", "Einen Fehler verbessern", "Aus dem Fehler einen Merksatz machen."], ["14–15", "Erfolg festhalten", "Heute konnte ich ..." ]], [.8, 2.3, 3.4], 9.3)
+    h2(doc, "Gute Rückfragen")
+    bullets(doc, ["Woran erkennst du das?", "Was ist ähnlich, was ist verschieden?", "Welche drei Wörter gehören zusammen?", "Ist das eine historische Aussage oder eine Glaubensaussage?", "Kannst du es in zwei Sätzen erklären?", "Welche deutsche Prüfungsformulierung brauchst du?"])
+    callout(doc, "Merksatz", "Kirche - Bibel - Jesus · Moschee - Koran - Mohammed · Synagoge - Tora - Mose", CREAM, GOLD)
+
+    page_break(doc)
+    h1(doc, "3. Fünf-Tage-Plan")
+    table(doc, ["Tag", "Schwerpunkt", "Kurzer Lerncheck"], [["1", "Fünf Religionen, Symbole, Karte, mono/poly", "Eine Vergleichstabelle ohne Hilfe ausfüllen."], ["2", "Christentum, Jesus und Kirche", "Vier Stationen erzählen und vier Teile benennen."], ["3", "Islam, Mohammed und Moschee", "Vier Stationen und die fünf Säulen erklären."], ["4", "Judentum und Vergleich", "Drei Gemeinsamkeiten und drei Unterschiede nennen."], ["5", "Probeprüfung", "Nur Fehler wiederholen; danach ein kurzer App-Test."]], [.55, 2.8, 3.15], 9.2)
+    h2(doc, "So korrigieren Sie hilfreich")
+    numbers(doc, ["Zuerst benennen, was bereits stimmt.", "Eine einzige Stelle präzisieren.", "Das Kind die vollständige Antwort nochmals sagen lassen.", "Die Frage später am selben oder nächsten Tag erneut stellen."])
+    h2(doc, "Wenn Motivation fehlt")
+    bullets(doc, ["Mit drei leichten Fragen beginnen.", "Zwischen Sprechen, Zeichnen, Zuordnen und App wechseln.", "Ein konkretes Tagesziel vereinbaren, zum Beispiel zehn Fragen.", "Fortschritt loben, nicht nur richtige Antworten."])
+
+    page_break(doc)
+    h1(doc, "4. Sensibel über Religion sprechen")
+    callout(doc, "Respektvolle Sprache", "Religionen sind vielfältig. Lernkarten, Karten und Symbole helfen beim Ordnen, beschreiben aber nie alle Menschen einer Tradition vollständig.")
+    h2(doc, "Hilfreiche Formulierungen")
+    bullets(doc, ["Christinnen und Christen glauben, dass ...", "Nach islamischer Überlieferung ...", "Im Judentum gibt es verschiedene Formen von ...", "Historisch lässt sich sagen ...", "Menschen können diese Frage unterschiedlich beantworten."])
+    h2(doc, "Datenschutz und Lernplattform")
+    paragraph(doc, "Nach der Verbindung mit dem Familienbereich werden App, Fach, Thema, Ergebnis, Punkte und Zeitpunkt gespeichert. Antworten, Fotos, Schulname und Adresse werden nicht gespeichert. Neue Themen und Fächer können später dasselbe Familienprofil verwenden.")
+    h2(doc, "Fachliche Orientierung")
+    paragraph(doc, "Lehrplan 21 Kanton Zug, besonders NMG.12.1, NMG.12.2 und NMG.12.5. Das Lernzielblatt der Klasse bestimmt den konkreten Prüfungsumfang. Offizielle Seiten: zg.ch/de/bildung/schulen/gemeindliche-schulen/unterricht/lehrplan21 · zg.lehrplan.ch")
+    path = OUT / "Praxisleitfaden_Familie_Pruefung_1_DE.docx"
+    doc.save(path)
+    return path
+
+
+def build_family_english():
+    doc = Document()
+    configure(doc, "Practical family guide · NMG Religions")
+    cover(doc, "Family support · Test 1", "Learning with confidence", "A practical guide for parents and learning supporters", "For families of children in Grade 6", "English · key German exam terms retained", "—  Family learning guide for the first test  —")
+    h1(doc, "1. The goal")
+    callout(doc, "Short and regular", "Brief, repeated sessions work better than a long memorisation session. The learner should explain, compare, label and return to mistakes after a delay.")
+    h2(doc, "What matters for the first test")
+    bullets(doc, ["Overview of five world religions: names, symbols and broad geographical distribution.", "Explain Monotheismus and Polytheismus clearly.", "Compare Christianity, Islam and Judaism in detail.", "Retell key stages in the lives of Jesus and Mohammed.", "Recognise important features of a Kirche, Moschee and Synagoge.", "Distinguish historical statements from faith statements respectfully."])
+    h2(doc, "The adult's role")
+    bullets(doc, ["Ask questions instead of giving long explanations.", "Correct only one mistaken idea at a time.", "Ask the learner to repeat the improved answer in their own words.", "Finish with a visible success."])
+
+    page_break(doc)
+    h1(doc, "2. The 15-minute routine")
+    table(doc, ["Minutes", "Activity", "Example"], [["0–3", "Recall without notes", "Tell me everything you remember about Islam."], ["3–7", "Clarify one study card", "How is a Kirche different from a Synagoge?"], ["7–12", "App or oral questions", "Answer five to eight short questions."], ["12–14", "Repair one mistake", "Turn the correction into a memory sentence."], ["14–15", "Record a success", "Today I was able to ..."]], [.8, 2.3, 3.4], 9.3)
+    h2(doc, "Useful follow-up questions")
+    bullets(doc, ["How do you recognise that?", "What is similar and what is different?", "Which three terms belong together?", "Is that a historical statement or a faith statement?", "Can you explain it in two sentences?", "Which German term will you need in the test?"])
+    callout(doc, "Memory line", "Kirche - Bibel - Jesus · Moschee - Koran - Mohammed · Synagoge - Tora - Mose", CREAM, GOLD)
+
+    page_break(doc)
+    h1(doc, "3. Five-day plan")
+    table(doc, ["Day", "Focus", "Quick check"], [["1", "Five religions, symbols, map, mono/poly", "Complete a comparison table without help."], ["2", "Christianity, Jesus and the church", "Retell four stages and label four features."], ["3", "Islam, Mohammed and the mosque", "Retell four stages and explain the five pillars."], ["4", "Judaism and comparison", "Give three similarities and three differences."], ["5", "Practice test", "Repeat mistakes only, then take a short app quiz."]], [.55, 2.8, 3.15], 9.2)
+    h2(doc, "How to correct constructively")
+    numbers(doc, ["Begin by naming what is already correct.", "Clarify one point only.", "Ask the learner to give the whole answer again.", "Ask the same question later that day or the next day."])
+    h2(doc, "When motivation is low")
+    bullets(doc, ["Start with three easy questions.", "Alternate speaking, drawing, matching and app practice.", "Agree on one concrete target, such as ten questions.", "Praise progress and persistence, not only correct answers."])
+
+    page_break(doc)
+    h1(doc, "4. Talking about religion sensitively")
+    callout(doc, "Respectful language", "Religious traditions are diverse. Tables, maps and symbols are useful study aids, but they never describe every person or community completely.")
+    h2(doc, "Helpful sentence starters")
+    bullets(doc, ["Christians believe that ...", "According to Islamic tradition ...", "There are different Jewish approaches to ...", "Historically, we can say ...", "People may answer this question in different ways."])
+    h2(doc, "Privacy and the learning platform")
+    paragraph(doc, "After the learner's app is connected to the family dashboard, the platform stores the app, subject, topic, result, points and time. It does not store written answers, photos, school name or address. Future subjects can use the same family profile.")
+    h2(doc, "Curriculum reference")
+    paragraph(doc, "Lehrplan 21 for the Canton of Zug, especially NMG.12.1, NMG.12.2 and NMG.12.5. The class learning-objective sheet defines the exact scope of the test. Official pages: zg.ch/de/bildung/schulen/gemeindliche-schulen/unterricht/lehrplan21 · zg.lehrplan.ch")
+    path = OUT / "Practical_Family_Guide_Test_1_EN.docx"
+    doc.save(path)
+    return path
+
+
 if __name__ == "__main__":
-    for result in (build_german(), build_spanish(), build_solutions()):
+    for result in (build_german(), build_spanish(), build_solutions(), build_family_german(), build_family_english()):
         print(result)
