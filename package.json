@@ -10,7 +10,8 @@
     "build": "vinext build",
     "build:netlify": "next build",
     "start": "vinext start",
-    "lint": "eslint . --ignore-pattern dist --ignore-pattern .next"
+    "lint": "eslint . --ignore-pattern dist --ignore-pattern .next",
+    "test:training": "node --experimental-strip-types tools/validate-training.ts"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.112.3",

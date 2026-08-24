@@ -2,18 +2,17 @@
 
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { cloudIsConfigured } from '../lib/supabase';
-import { claimPairingCode, createAttempt, flushAttemptQueue, getConsolidatedProgress, getLinkedLearner, queueAndSyncAttempt, resetProgressWithPassword, saveProgressBackup, saveProgressBackupOnClose, type CloudState } from '../lib/progress-cloud';
+import { claimPairingCode, createAttempt, flushAttemptQueue, getConsolidatedProgress, getLinkedLearner, queueAndSyncAttempt, resetProgressWithPassword, saveProgressBackup, saveProgressBackupOnClose, touchLinkedDevice, type CloudState } from '../lib/progress-cloud';
+import { buildAdaptiveRound, questions, shuffleIndices, topics, type ItemStat, type Topic } from '../lib/training';
 
-type Topic = 'Grundwissen' | 'Christentum' | 'Islam' | 'Judentum' | 'Gebäude & Schriften';
-type Question = { id: string; topic: Topic; prompt: string; options: string[]; answer: number; explanation: string };
 type TopicStat = { attempts: number; correct: number };
-type Progress = { stars: number; streak: number; bestStreak: number; totalAttempts: number; topics: Record<Topic, TopicStat> };
+type Progress = { stars: number; streak: number; bestStreak: number; totalAttempts: number; topics: Record<Topic, TopicStat>; items: Record<string, ItemStat> };
 type BeforeInstallPromptEvent = Event & { prompt: () => Promise<void> };
 
-const topics: Topic[] = ['Grundwissen', 'Christentum', 'Islam', 'Judentum', 'Gebäude & Schriften'];
 const emptyProgress = (): Progress => ({
   stars: 0, streak: 0, bestStreak: 0, totalAttempts: 0,
   topics: Object.fromEntries(topics.map((topic) => [topic, { attempts: 0, correct: 0 }])) as Record<Topic, TopicStat>,
+  items: {},
 });
 
 function normalizeProgress(value: unknown): Progress {
@@ -28,49 +27,13 @@ function normalizeProgress(value: unknown): Progress {
       const stat = sourceTopics[topic];
       return [topic, { attempts: Math.max(0, Number(stat?.attempts) || 0), correct: Math.max(0, Number(stat?.correct) || 0) }];
     })) as Record<Topic, TopicStat>,
+    items: Object.fromEntries(Object.entries(source.items && typeof source.items === 'object' ? source.items : {}).map(([id, value]) => {
+      const stat = value && typeof value === 'object' ? value as Partial<ItemStat> : {};
+      return [id, { attempts: Math.max(0, Number(stat.attempts) || 0), correct: Math.max(0, Number(stat.correct) || 0) }];
+    })),
   };
 }
 
-const questions: Question[] = [
-  { id: 'g1', topic: 'Grundwissen', prompt: 'Welche fünf Weltreligionen stehen im Lernheft?', options: ['Christentum, Islam, Judentum, Hinduismus, Buddhismus', 'Christentum, Islam, Sikhismus, Taoismus, Jainismus', 'Judentum, Islam, Schintoismus, Bahai, Buddhismus'], answer: 0, explanation: 'Für den Überblick kennst du alle fünf. In Prüfung Teil 1 lernst du Christentum, Islam und Judentum genauer.' },
-  { id: 'g2', topic: 'Grundwissen', prompt: 'Was bedeutet Monotheismus?', options: ['Glaube an einen Gott', 'Glaube an viele Gottheiten', 'Keine religiöse Überzeugung'], answer: 0, explanation: 'mono bedeutet eins oder allein.' },
-  { id: 'g3', topic: 'Grundwissen', prompt: 'Was bedeutet Polytheismus?', options: ['Glaube an viele Gottheiten', 'Glaube an einen Gott', 'Glaube nur an Engel'], answer: 0, explanation: 'poly bedeutet viel oder mehrere.' },
-  { id: 'g4', topic: 'Grundwissen', prompt: 'Welche drei Religionen sind monotheistisch?', options: ['Judentum, Christentum und Islam', 'Hinduismus, Buddhismus und Islam', 'Christentum, Buddhismus und Hinduismus'], answer: 0, explanation: 'Judentum, Christentum und Islam glauben an einen Gott.' },
-  { id: 'g5', topic: 'Grundwissen', prompt: 'Welche Aussage zur Verbreitung ist am besten?', options: ['Religionen kommen heute oft in vielen Ländern vor; Karten zeigen Schwerpunkte.', 'Jede Religion gibt es nur in einem Land.', 'In Europa gibt es nur Christentum.'], answer: 0, explanation: 'Menschen und Religionen sind weltweit vielfältig. Schulbuchkarten vereinfachen und zeigen Schwerpunkte.' },
-  { id: 'g6', topic: 'Grundwissen', prompt: 'Welches Symbol ordnet das Lernheft dem Buddhismus zu?', options: ['Dharma-Rad', 'Kreuz', 'Davidstern'], answer: 0, explanation: 'Das Rad steht unter anderem für die Lehre und den Weg Buddhas.' },
-  { id: 'g7', topic: 'Grundwissen', prompt: 'Welches Symbol ordnet das Lernheft dem Hinduismus zu?', options: ['Om-Zeichen', 'Halbmond', 'Kreuz'], answer: 0, explanation: 'Om ist eine heilige Silbe und ein verbreitetes Zeichen hinduistischer Traditionen.' },
-  { id: 'g8', topic: 'Grundwissen', prompt: 'Wozu können Religionen Menschen helfen?', options: ['Sinnfragen bedenken, Gemeinschaft erleben und Werte finden', 'Jede wissenschaftliche Frage endgültig lösen', 'Alle Menschen gleich denken lassen'], answer: 0, explanation: 'Religion kann Halt, Gemeinschaft, Rituale und Antworten auf Sinnfragen geben.' },
-  { id: 'c1', topic: 'Christentum', prompt: 'Was ist das wichtigste Zeichen des Christentums?', options: ['Das Kreuz', 'Der Davidstern', 'Das Dharma-Rad'], answer: 0, explanation: 'Das Kreuz erinnert an Jesus Christus.' },
-  { id: 'c2', topic: 'Christentum', prompt: 'Wie heisst die heilige Schrift der Christinnen und Christen?', options: ['Bibel', 'Koran', 'Tora'], answer: 0, explanation: 'Die Bibel besteht aus Altem und Neuem Testament.' },
-  { id: 'c3', topic: 'Christentum', prompt: 'Welche drei grossen Konfessionen solltest du kennen?', options: ['katholisch, reformiert/evangelisch, orthodox', 'sunnitisch, schiitisch, orthodox', 'katholisch, hinduistisch, buddhistisch'], answer: 0, explanation: 'Das Christentum hat verschiedene Konfessionen mit gemeinsamen Grundlagen.' },
-  { id: 'c4', topic: 'Christentum', prompt: 'Was bedeutet die christliche Dreifaltigkeit?', options: ['Vater, Sohn und Heiliger Geist', 'Jesus, Mose und Mohammed', 'Bibel, Kirche und Kreuz'], answer: 0, explanation: 'Christinnen und Christen sprechen von einem Gott in Vater, Sohn und Heiligem Geist.' },
-  { id: 'c5', topic: 'Christentum', prompt: 'Welche Botschaft wird Jesus im Lernheft besonders zugeordnet?', options: ['Liebe deinen Nächsten wie dich selbst.', 'Sammle möglichst viel Besitz.', 'Vermeide jede Gemeinschaft.'], answer: 0, explanation: 'Nächstenliebe ist ein Kern der Botschaft Jesu.' },
-  { id: 'c6', topic: 'Christentum', prompt: 'Wo wirkte Jesus nach den Texten hauptsächlich?', options: ['Im Gebiet des heutigen Israel/Palästina', 'In Indien', 'Auf der Arabischen Halbinsel'], answer: 0, explanation: 'Jesus war Jude und lebte im Gebiet des heutigen Israel/Palästina.' },
-  { id: 'c7', topic: 'Christentum', prompt: 'Was feiern Christinnen und Christen an Ostern?', options: ['Die Auferstehung Jesu', 'Die Geburt Jesu', 'Den Beginn des Ramadan'], answer: 0, explanation: 'Karfreitag erinnert an den Tod, Ostern an die Auferstehung Jesu.' },
-  { id: 'c8', topic: 'Christentum', prompt: 'Was feiern Christinnen und Christen an Weihnachten?', options: ['Die Geburt Jesu', 'Die Himmelfahrt Jesu', 'Die Übergabe der Tora'], answer: 0, explanation: 'Weihnachten erinnert an die Geburt Jesu.' },
-  { id: 'c9', topic: 'Christentum', prompt: 'Wie starb Jesus nach den Berichten des Neuen Testaments?', options: ['Er wurde in Jerusalem gekreuzigt.', 'Er starb als alter König.', 'Er fiel in einer Schlacht in Rom.'], answer: 0, explanation: 'Jesus wurde unter römischer Herrschaft gekreuzigt.' },
-  { id: 'c10', topic: 'Christentum', prompt: 'Welche Regel passt zum Christentum?', options: ['Nächstenliebe und die Zehn Gebote', 'Die fünf Säulen', 'Der achtfache Pfad'], answer: 0, explanation: 'Nächstenliebe und die Zehn Gebote sind wichtige christliche Orientierungen.' },
-  { id: 'i1', topic: 'Islam', prompt: 'Was bedeutet das arabische Wort „Allah“?', options: ['Gott', 'Prophet', 'Gebetshaus'], answer: 0, explanation: 'Allah ist das arabische Wort für Gott; auch arabische Christinnen und Christen verwenden es.' },
-  { id: 'i2', topic: 'Islam', prompt: 'Wie heisst die heilige Schrift des Islams?', options: ['Koran', 'Bibel', 'Tora'], answer: 0, explanation: 'Im Islam gilt der Koran als Offenbarung Gottes an Mohammed.' },
-  { id: 'i3', topic: 'Islam', prompt: 'Wo wurde Mohammed ungefähr im Jahr 570 geboren?', options: ['Mekka', 'Medina', 'Jerusalem'], answer: 0, explanation: 'Mohammed wurde nach islamischer Überlieferung in Mekka auf der Arabischen Halbinsel geboren.' },
-  { id: 'i4', topic: 'Islam', prompt: 'Welcher Engel überbrachte Mohammed nach islamischer Überlieferung Offenbarungen?', options: ['Gabriel', 'Michael', 'Raphael'], answer: 0, explanation: 'Die Überlieferung nennt den Engel Gabriel.' },
-  { id: 'i5', topic: 'Islam', prompt: 'Wo empfing Mohammed die erste Offenbarung?', options: ['In der Höhle Hira bei Mekka', 'In einer Höhle bei Medina', 'In einem Tempel in Jerusalem'], answer: 0, explanation: 'Hira liegt bei Mekka. Die Formulierung „bei Medina“ in einer Aufgabe ist sehr wahrscheinlich ein Druckfehler.' },
-  { id: 'i6', topic: 'Islam', prompt: 'In welche Stadt wanderte Mohammed aus?', options: ['Medina', 'Rom', 'Nazareth'], answer: 0, explanation: 'Die Auswanderung von Mekka nach Medina heisst Hidschra.' },
-  { id: 'i7', topic: 'Islam', prompt: 'Wie nennen Musliminnen und Muslime Mohammed?', options: ['Prophet und Gesandter Gottes', 'Sohn Gottes', 'Gott des Mondes'], answer: 0, explanation: 'Im Islam ist Mohammed ein Mensch, Prophet und Gesandter Gottes.' },
-  { id: 'i8', topic: 'Islam', prompt: 'Welche Reihe nennt die fünf Säulen des Islams?', options: ['Glaubensbekenntnis, Gebet, Almosen, Fasten, Pilgerfahrt', 'Taufe, Abendmahl, Beichte, Firmung, Ehe', 'Geburt, Schule, Beruf, Reise, Tod'], answer: 0, explanation: 'Die fünf Säulen strukturieren wichtige religiöse Pflichten.' },
-  { id: 'j1', topic: 'Judentum', prompt: 'Welches Zeichen wird dem Judentum häufig zugeordnet?', options: ['Davidstern', 'Kreuz', 'Om'], answer: 0, explanation: 'Der sechszackige Davidstern ist ein verbreitetes jüdisches Zeichen.' },
-  { id: 'j2', topic: 'Judentum', prompt: 'Wie heisst das jüdische Gebetshaus?', options: ['Synagoge', 'Moschee', 'Kirche'], answer: 0, explanation: 'In der Synagoge wird gebetet, gelernt und Gemeinschaft gelebt.' },
-  { id: 'j3', topic: 'Judentum', prompt: 'Was ist die Tora?', options: ['Die fünf Bücher Mose und Kern der jüdischen heiligen Schriften', 'Ein christliches Fest', 'Ein muslimisches Gebet'], answer: 0, explanation: 'Die Tora wird auf Schriftrollen geschrieben und in der Synagoge gelesen.' },
-  { id: 'j4', topic: 'Judentum', prompt: 'Welche Aussage ist richtig?', options: ['Das Judentum ist monotheistisch.', 'Das Judentum verehrt viele Gottheiten.', 'Jüdinnen und Juden haben keine heiligen Schriften.'], answer: 0, explanation: 'Im Judentum steht der Glaube an den einen Gott im Zentrum.' },
-  { id: 'j5', topic: 'Judentum', prompt: 'Welcher Tag ist der jüdische Ruhetag?', options: ['Schabbat', 'Freitag der Kreuzigung', 'Ramadan'], answer: 0, explanation: 'Der Schabbat beginnt am Freitagabend und endet am Samstagabend.' },
-  { id: 'j6', topic: 'Judentum', prompt: 'Welche Regel gehört zum Judentum?', options: ['Zehn Gebote und Speiseregeln (koscher)', 'Fünf Säulen', 'Achtfacher Pfad'], answer: 0, explanation: 'Zu jüdischen Traditionen gehören Gebote, Schabbat und unterschiedliche Formen koscherer Ernährung.' },
-  { id: 'b1', topic: 'Gebäude & Schriften', prompt: 'Wo befindet sich der Altar?', options: ['In einer Kirche', 'Nur in einer Moschee', 'Nur in einer Synagoge'], answer: 0, explanation: 'In katholischen Kirchen ist der Altar ein zentraler Ort der Eucharistiefeier.' },
-  { id: 'b2', topic: 'Gebäude & Schriften', prompt: 'Was ist ein Tabernakel?', options: ['Ein Aufbewahrungsort für geweihte Hostien in einer katholischen Kirche', 'Der Gebetsteppich in einer Moschee', 'Der Toraschrein'], answer: 0, explanation: 'Der Tabernakel befindet sich meist nahe beim Altar und ist häufig durch ein Licht gekennzeichnet.' },
-  { id: 'b3', topic: 'Gebäude & Schriften', prompt: 'Was zeigt die Gebetsrichtung in einer Moschee an?', options: ['Die Gebetsnische Mihrab', 'Der Kirchturm', 'Die Orgel'], answer: 0, explanation: 'Der Mihrab zeigt die Gebetsrichtung nach Mekka (Qibla) an.' },
-  { id: 'b4', topic: 'Gebäude & Schriften', prompt: 'Was ist ein Minbar?', options: ['Eine Kanzel in der Moschee', 'Ein Taufbecken', 'Ein Toraschrein'], answer: 0, explanation: 'Vom Minbar aus wird besonders beim Freitagsgebet gepredigt.' },
-  { id: 'b5', topic: 'Gebäude & Schriften', prompt: 'Wo werden Torarollen aufbewahrt?', options: ['Im Toraschrein der Synagoge', 'Im Minarett', 'Im Taufbecken'], answer: 0, explanation: 'Der Toraschrein ist ein besonders wichtiger Ort in der Synagoge.' },
-  { id: 'b6', topic: 'Gebäude & Schriften', prompt: 'Welche Zuordnung ist vollständig richtig?', options: ['Kirche–Bibel, Moschee–Koran, Synagoge–Tora', 'Kirche–Koran, Moschee–Tora, Synagoge–Bibel', 'Kirche–Tora, Moschee–Bibel, Synagoge–Koran'], answer: 0, explanation: 'Diese drei Paare gehören zum Kernwissen für Prüfung Teil 1.' },
-];
 
 const religionRows = [
   ['Christentum', 'Kreuz', 'weltweit; Schwerpunkte u. a. Europa und Amerika', 'ein Gott', 'Kirche', 'Bibel'],
@@ -91,6 +54,12 @@ export default function Home() {
   const [currentId, setCurrentId] = useState('g1');
   const [selected, setSelected] = useState<number | null>(null);
   const [locked, setLocked] = useState(false);
+  const [roundIds, setRoundIds] = useState<string[]>(() => buildAdaptiveRound('Alle', {}));
+  const [roundIndex, setRoundIndex] = useState(0);
+  const [roundResults, setRoundResults] = useState<Record<string, boolean>>({});
+  const [roundComplete, setRoundComplete] = useState(false);
+  const [roundMode, setRoundMode] = useState<'adaptive' | 'mistakes'>('adaptive');
+  const [optionOrder, setOptionOrder] = useState<number[]>(() => shuffleIndices(3));
   const [showInstall, setShowInstall] = useState(false);
   const [installEvent, setInstallEvent] = useState<BeforeInstallPromptEvent | null>(null);
   const [showSync, setShowSync] = useState(false);
@@ -107,12 +76,13 @@ export default function Home() {
   useEffect(() => {
     const saved = window.localStorage.getItem('davids-nmg-progress-v1');
     let loaded = emptyProgress();
-    if (saved) { try { loaded = JSON.parse(saved); } catch { /* start fresh */ } }
+    if (saved) { try { loaded = normalizeProgress(JSON.parse(saved)); } catch { /* start fresh */ } }
     queueMicrotask(() => { setProgress(loaded); setReady(true); });
     if (cloudIsConfigured()) {
       getLinkedLearner().then(async (linked) => {
         if (!linked) { setCloudState('unlinked'); return; }
         setLearnerId(linked.id);
+        await touchLinkedDevice(linked.id);
         const nextState = await flushAttemptQueue();
         setCloudState(nextState);
         if (nextState === 'synced') {
@@ -138,7 +108,7 @@ export default function Home() {
       }).catch(() => undefined);
     }
     const handler = (event: Event) => { event.preventDefault(); setInstallEvent(event as BeforeInstallPromptEvent); };
-    const syncOnline = () => { getLinkedLearner().then(async (linked) => { if (!linked) return; const state = await flushAttemptQueue(); setCloudState(state); if (state === 'synced') { const consolidated = normalizeProgress(await getConsolidatedProgress<Progress>(linked.id)); setProgress(consolidated); await saveProgressBackup(linked.id, consolidated, 'reconnected'); sessionDirty.current = false; } }).catch(() => setCloudState('error')); };
+    const syncOnline = () => { getLinkedLearner().then(async (linked) => { if (!linked) { setLearnerId(null); setCloudState('unlinked'); return; } setLearnerId(linked.id); await touchLinkedDevice(linked.id); const state = await flushAttemptQueue(); setCloudState(state); if (state === 'synced') { const consolidated = normalizeProgress(await getConsolidatedProgress<Progress>(linked.id)); setProgress(consolidated); await saveProgressBackup(linked.id, consolidated, 'reconnected'); sessionDirty.current = false; } }).catch(() => setCloudState('error')); };
     window.addEventListener('beforeinstallprompt', handler);
     window.addEventListener('online', syncOnline);
     return () => { window.removeEventListener('beforeinstallprompt', handler); window.removeEventListener('online', syncOnline); navigator.serviceWorker?.removeEventListener('controllerchange', activateUpdate); if (updateTimer) window.clearInterval(updateTimer); };
@@ -151,6 +121,11 @@ export default function Home() {
     const refresh = async () => {
       if (!navigator.onLine) return;
       try {
+        const linked = await getLinkedLearner();
+        if (!linked || linked.id !== learnerId) {
+          setLearnerId(null); setCloudState('unlinked'); return;
+        }
+        await touchLinkedDevice(learnerId);
         const state = await flushAttemptQueue();
         setCloudState(state);
         if (state === 'synced') {
@@ -179,18 +154,40 @@ export default function Home() {
   const overall = progress.totalAttempts ? Math.round(totalCorrect / progress.totalAttempts * 100) : 0;
   const level = progress.stars >= 180 ? 'Wissens-Champion' : progress.stars >= 90 ? 'Weltenkenner' : progress.stars >= 35 ? 'Spurensucher' : 'Entdecker';
   const current = questions.find((q) => q.id === currentId) ?? questions[0];
-  const correct = selected === current.answer;
+  const displayedCorrectIndex = optionOrder.indexOf(current.answer);
+  const correct = selected === displayedCorrectIndex;
+  const mistakeIds = useMemo(() => questions.filter((question) => {
+    const stat = progress.items[question.id];
+    return stat && stat.attempts > 0 && stat.correct / stat.attempts < 0.8;
+  }).map((question) => question.id), [progress.items]);
+  const roundCorrect = Object.values(roundResults).filter(Boolean).length;
+  const poolSize = roundMode === 'mistakes' ? roundIds.length : questions.filter((question) => filter === 'Alle' || question.topic === filter).length;
 
-  function chooseNext(activeFilter = filter) {
-    const pool = questions.filter((q) => activeFilter === 'Alle' || q.topic === activeFilter).filter((q) => q.id !== currentId);
-    const ordered = [...pool].sort((a, b) => ratio(progress.topics[a.topic]) - ratio(progress.topics[b.topic]) || progress.topics[a.topic].attempts - progress.topics[b.topic].attempts);
-    setCurrentId((ordered[0] ?? questions[0]).id); setSelected(null); setLocked(false);
+  function showQuestion(id: string) {
+    const next = questions.find((question) => question.id === id) ?? questions[0];
+    setCurrentId(next.id);
+    setOptionOrder(shuffleIndices(next.options.length));
+    setSelected(null);
+    setLocked(false);
+  }
+
+  function chooseNext() {
+    const nextIndex = roundIndex + 1;
+    if (nextIndex >= roundIds.length) {
+      setRoundComplete(true);
+      setSelected(null);
+      setLocked(false);
+      return;
+    }
+    setRoundIndex(nextIndex);
+    showQuestion(roundIds[nextIndex]);
   }
 
   function answer(index: number) {
     if (locked) return;
     setSelected(index); setLocked(true);
-    const isCorrect = index === current.answer;
+    const isCorrect = optionOrder[index] === current.answer;
+    setRoundResults((old) => ({ ...old, [current.id]: isCorrect }));
     sessionDirty.current = true;
     if (learnerId) {
       setCloudState(navigator.onLine ? 'connecting' : 'offline');
@@ -206,15 +203,22 @@ export default function Home() {
     setProgress((old) => {
       const topic = old.topics[current.topic];
       const streak = isCorrect ? old.streak + 1 : 0;
-      return { ...old, stars: old.stars + (isCorrect ? 5 : 1), streak, bestStreak: Math.max(old.bestStreak, streak), totalAttempts: old.totalAttempts + 1, topics: { ...old.topics, [current.topic]: { attempts: topic.attempts + 1, correct: topic.correct + (isCorrect ? 1 : 0) } } };
+      const item = old.items[current.id] ?? { attempts: 0, correct: 0 };
+      return { ...old, stars: old.stars + (isCorrect ? 5 : 1), streak, bestStreak: Math.max(old.bestStreak, streak), totalAttempts: old.totalAttempts + 1, topics: { ...old.topics, [current.topic]: { attempts: topic.attempts + 1, correct: topic.correct + (isCorrect ? 1 : 0) } }, items: { ...old.items, [current.id]: { attempts: item.attempts + 1, correct: item.correct + (isCorrect ? 1 : 0) } } };
     });
   }
 
-  function startTraining(topic: Topic | 'Alle' = 'Alle') {
-    setFilter(topic); setSection('training');
-    const first = questions.find((q) => topic === 'Alle' || q.topic === topic) ?? questions[0];
-    setCurrentId(first.id); setSelected(null); setLocked(false);
+  function startTraining(topic: Topic | 'Alle' = 'Alle', onlyIds?: string[]) {
+    const ids = buildAdaptiveRound(topic, progress.items, { onlyIds, size: onlyIds?.length });
+    if (!ids.length) return;
+    setFilter(topic); setSection('training'); setRoundMode(onlyIds ? 'mistakes' : 'adaptive');
+    setRoundIds(ids); setRoundIndex(0); setRoundResults({}); setRoundComplete(false);
+    showQuestion(ids[0]);
     setTimeout(() => document.getElementById('content')?.scrollIntoView({ behavior: 'smooth' }), 30);
+  }
+
+  function startMistakeTraining() {
+    startTraining('Alle', mistakeIds);
   }
 
   async function installApp() {
@@ -251,6 +255,7 @@ export default function Home() {
     try {
       const id = await claimPairingCode(pairingCode, progress);
       setLearnerId(id); setCloudState('synced');
+      await touchLinkedDevice(id);
       const consolidated = normalizeProgress(await getConsolidatedProgress<Progress>(id));
       setProgress(consolidated);
       await saveProgressBackup(id, consolidated, 'paired');
@@ -266,7 +271,7 @@ export default function Home() {
     <main>
       <header className="topbar">
         <button className="brand plainButton" onClick={() => setSection('start')} aria-label="Startseite"><span className="brandMark">W</span><span>Davids Weltreligionen-Training</span></button>
-        <nav className="desktopNav" aria-label="Hauptnavigation">{[['start','Start'],['lernen','Lernen'],['training','Trainieren'],['progress','Fortschritt']].map(([key,label]) => <button key={key} className={section === key ? 'navButton active' : 'navButton'} onClick={() => setSection(key)}>{label}</button>)}</nav>
+        <nav className="desktopNav" aria-label="Hauptnavigation">{[['start','Start'],['lernen','Lernen'],['training','Trainieren'],['progress','Fortschritt']].map(([key,label]) => <button key={key} className={section === key ? 'navButton active' : 'navButton'} onClick={() => key === 'training' ? startTraining('Alle') : setSection(key)}>{label}</button>)}</nav>
         <div className="topActions"><button className={`cloudButton ${cloudState}`} onClick={() => setShowSync(true)}><span>●</span>{cloudState === 'synced' ? 'Mit Eltern verbunden' : cloudState === 'offline' ? 'Offline · wird später gesendet' : 'Fortschritt verbinden'}</button><button className="installButton" onClick={installApp}>＋ App installieren</button></div>
       </header>
 
@@ -275,18 +280,21 @@ export default function Home() {
         <aside className="progressCard" aria-label="Lernfortschritt"><div className="orbit" style={{'--progress': `${overall * 3.6}deg`} as React.CSSProperties}><span>✦</span><b>{overall}%</b></div><div><p className="tinyLabel">DEIN WEG</p><h2>{level}</h2><p>{progress.totalAttempts ? `${progress.totalAttempts} Fragen gelöst · ${progress.stars} Sterne` : 'Löse die erste Frage und sammle deinen ersten Stern.'}</p></div></aside>
       </section>
 
-      <div className="mobileNav" aria-label="Mobile Navigation">{[['start','⌂','Start'],['lernen','◫','Lernen'],['training','✦','Training'],['progress','◔','Fortschritt']].map(([key,icon,label]) => <button key={key} className={section === key ? 'active' : ''} onClick={() => setSection(key)}><span>{icon}</span>{label}</button>)}</div>
+      <div className="mobileNav" aria-label="Mobile Navigation">{[['start','⌂','Start'],['lernen','◫','Lernen'],['training','✦','Training'],['progress','◔','Fortschritt']].map(([key,icon,label]) => <button key={key} className={section === key ? 'active' : ''} onClick={() => key === 'training' ? startTraining('Alle') : setSection(key)}><span>{icon}</span>{label}</button>)}</div>
 
       <section id="content" className="contentShell">
         {section === 'start' && <Dashboard progress={progress} onStart={startTraining} />}
         {section === 'lernen' && <Learn onStart={startTraining} />}
         {section === 'training' && <section className="mission">
-          <div className="missionTop"><div><p className="eyebrow">ADAPTIVES TRAINING</p><h2>{current.topic}</h2></div><span className="starPill">✦ {progress.stars}</span></div>
-          <div className="filterRow">{(['Alle', ...topics] as const).map((topic) => <button key={topic} className={filter === topic ? 'chip active' : 'chip'} onClick={() => startTraining(topic)}>{topic}</button>)}</div>
-          <p className="question">{current.prompt}</p>
-          <div className="answerGrid">{current.options.map((option, index) => { const state = locked ? index === current.answer ? ' correct' : index === selected ? ' wrong' : '' : selected === index ? ' active' : ''; return <button className={`answer${state}`} key={option} onClick={() => answer(index)} disabled={locked}><span className="choiceLetter">{String.fromCharCode(65 + index)}</span>{option}</button>; })}</div>
-          {locked && <div className={correct ? 'feedback success' : 'feedback retry'} role="status"><strong>{correct ? 'Stark! +5 Sterne' : 'Guter Versuch. +1 Stern'}</strong><span>{current.explanation}</span></div>}
-          <div className="missionFooter"><span>{progress.streak >= 2 ? `🔥 ${progress.streak} richtige Antworten in Folge` : 'Das Training wählt schwächere Themen häufiger aus.'}</span><button className="primaryButton small" onClick={() => chooseNext()} disabled={!locked}>Nächste Frage →</button></div>
+          <div className="missionTop"><div><p className="eyebrow">{roundMode === 'mistakes' ? 'FEHLER GEZIELT ÜBEN' : 'ADAPTIVES TRAINING'}</p><h2>{roundComplete ? 'Runde geschafft!' : current.topic}</h2></div><span className="starPill">✦ {progress.stars}</span></div>
+          <div className="filterRow">{(['Alle', ...topics] as const).map((topic) => <button key={topic} className={filter === topic && roundMode === 'adaptive' ? 'chip active' : 'chip'} onClick={() => startTraining(topic)}>{topic}</button>)}{mistakeIds.length > 0 && <button className={roundMode === 'mistakes' ? 'chip active mistakeChip' : 'chip mistakeChip'} onClick={startMistakeTraining}>↻ Fehler üben ({mistakeIds.length})</button>}</div>
+          {roundComplete ? <div className="roundSummary" role="status"><span className="roundTrophy" aria-hidden="true">{roundCorrect === roundIds.length ? '🏆' : '🌟'}</span><h3>{roundCorrect} von {roundIds.length} richtig</h3><p>{roundCorrect === roundIds.length ? 'Perfekt – jede Frage dieser Runde war richtig.' : 'Die Runde ist beendet. Keine Frage wurde doppelt gezählt.'}</p><div className="roundActions">{Object.values(roundResults).some((value) => !value) && <button className="primaryButton small" onClick={() => startTraining(filter, Object.entries(roundResults).filter(([, value]) => !value).map(([id]) => id))}>Fehler dieser Runde üben</button>}<button className="secondaryButton" onClick={() => startTraining(filter)}>Neue adaptive Runde</button></div></div> : <>
+            <div className="roundProgress"><span>Frage {roundIndex + 1} von {roundIds.length} · Pool: {poolSize}</span><div className="wideBar"><span style={{ width: `${((roundIndex + (locked ? 1 : 0)) / roundIds.length) * 100}%` }}/></div></div>
+            <p className="question">{current.prompt}</p>
+            <div className="answerGrid">{optionOrder.map((originalIndex, index) => { const option = current.options[originalIndex]; const state = locked ? index === displayedCorrectIndex ? ' correct' : index === selected ? ' wrong' : '' : selected === index ? ' active' : ''; return <button className={`answer${state}`} key={`${current.id}-${originalIndex}`} onClick={() => answer(index)} disabled={locked}><span className="choiceLetter">{String.fromCharCode(65 + index)}</span>{option}</button>; })}</div>
+            {locked && <div className={correct ? 'feedback success' : 'feedback retry'} role="status"><strong>{correct ? 'Stark! +5 Sterne' : 'Guter Versuch. +1 Stern'}</strong><span>{current.explanation}</span></div>}
+            <div className="missionFooter"><span>{progress.streak >= 2 ? `🔥 ${progress.streak} richtige Antworten in Folge` : 'Schwierige Fragen kommen in späteren Runden häufiger zurück.'}</span><button className="primaryButton small" onClick={chooseNext} disabled={!locked}>{roundIndex + 1 === roundIds.length ? 'Runde abschliessen →' : 'Nächste Frage →'}</button></div>
+          </>}
         </section>}
         {section === 'progress' && <ProgressView progress={progress} overall={overall} level={level} onReset={resetProgress} onStart={startTraining} cloudState={cloudState} onConnect={() => setShowSync(true)} />}
       </section>

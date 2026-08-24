@@ -65,6 +65,24 @@ export async function getLinkedLearner(): Promise<{ id: string; name: string } |
   return { id: data.learner_id as string, name: (learner as { display_name?: string } | null)?.display_name ?? 'David' };
 }
 
+function describeDevice(): string {
+  if (typeof navigator === 'undefined') return 'Unbekanntes Gerät';
+  const agent = navigator.userAgent;
+  const platform = /iPad/i.test(agent) ? 'iPad' : /iPhone/i.test(agent) ? 'iPhone' : /Windows/i.test(agent) ? 'Windows-PC' : /Macintosh|Mac OS/i.test(agent) ? 'Mac' : /Android/i.test(agent) ? 'Android-Gerät' : 'Gerät';
+  const browser = /Edg\//i.test(agent) ? 'Edge' : /CriOS|Chrome\//i.test(agent) ? 'Chrome' : /Firefox\//i.test(agent) ? 'Firefox' : /Safari\//i.test(agent) ? 'Safari' : 'Browser';
+  return `${platform} · ${browser}`;
+}
+
+export async function touchLinkedDevice(learnerId: string) {
+  const supabase = getSupabaseClient();
+  if (!supabase || !navigator.onLine) return;
+  const { error } = await supabase.rpc('touch_learner_device', {
+    p_learner_id: learnerId,
+    p_device_name: describeDevice(),
+  });
+  if (error) throw error;
+}
+
 export async function claimPairingCode(code: string, legacyProgress: unknown, appKey = CURRENT_LEARNING_APP.key) {
   const supabase = getSupabaseClient();
   if (!supabase) throw new Error('Die Cloud-Verbindung ist noch nicht eingerichtet.');

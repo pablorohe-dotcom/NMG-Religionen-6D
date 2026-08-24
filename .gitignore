@@ -38,6 +38,8 @@ next-env.d.ts
 /outputs/
 /work/
 /tmp/
+.supabase/
+/supabase/.temp/
 .pnpm-store/
 source_material/
 qa/

@@ -9,7 +9,9 @@ La aplicación entrena de forma progresiva los objetivos de la primera prueba:
 - visión general de cristianismo, islam, judaísmo, hinduismo y budismo;
 - profundización en cristianismo, islam y judaísmo;
 - edificios, escrituras, símbolos, personas importantes, costumbres y reglas;
-- preguntas con explicación inmediata, estrellas, rachas, niveles y progreso por tema;
+- banco de 100 preguntas (20 por categoría), con opciones y orden aleatorios;
+- rondas finitas sin preguntas repetidas, explicación inmediata, estrellas, rachas y progreso por tema;
+- práctica adaptativa por pregunta y modo específico para volver sobre los errores;
 - funcionamiento sin conexión después de la primera carga;
 - progreso sin conexión y sincronización bidireccional entre dispositivos mediante un panel privado para padres;
 - actualización automática de la aplicación instalada sin borrar el progreso.
@@ -61,6 +63,7 @@ La ruta `/parent` contiene una **central de aprendizaje familiar** protegida med
 - consultar precisión, preguntas practicadas, estrellas y última actividad;
 - ver el dominio de cada tema y los últimos días de entrenamiento;
 - generar un código temporal para vincular el dispositivo de David;
+- ver las instalaciones vinculadas, su última actividad y desvincularlas sin borrar resultados;
 - descargar únicamente las soluciones y guías correspondientes al idioma seleccionado;
 - consultar y cambiar la contraseña parental necesaria para reiniciar el progreso;
 - restaurar copias automáticas y reiniciar el progreso con una copia previa de seguridad.
@@ -72,7 +75,7 @@ David no necesita correo. Su dispositivo utiliza una sesión anónima de Supabas
 ### Activar Supabase
 
 1. Crea un proyecto en Supabase, preferentemente en una región europea.
-2. Abre **SQL Editor** y ejecuta, en orden, las migraciones de [`supabase/migrations`](supabase/migrations): esquema base, progreso bidireccional y corrección del reloj de restauración.
+2. Abre **SQL Editor** y ejecuta, en orden, todas las migraciones de [`supabase/migrations`](supabase/migrations).
 3. En **Authentication > Sign In / Providers**, mantén activo Email y habilita **Anonymous Sign-Ins**.
 4. En **Authentication > URL Configuration**, configura la URL definitiva de la aplicación y añade `http://localhost:3000/**` para desarrollo. Para previews de Netlify puedes añadir `https://**--TU-SITIO.netlify.app/**`.
 5. Copia `.env.example` a `.env.local` para desarrollo y completa la URL del proyecto y su clave pública.

@@ -1,4 +1,4 @@
-const CACHE = 'davids-nmg-v3';
+const CACHE = 'davids-nmg-v4';
 const CORE = ['/', '/manifest.webmanifest', '/images/app-icon-192.png', '/images/app-icon-512.png', '/images/church.jpg', '/images/mosque.jpg', '/images/synagogue.jpg'];
 
 self.addEventListener('install', (event) => {
