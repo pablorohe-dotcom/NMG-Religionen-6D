@@ -598,7 +598,50 @@ def build_solutions_german():
     label_table(doc, [["Toraschrein", "Aufbewahrung der Torarollen"], ["Bima", "Lesepult"], ["Ewiges Licht", "Licht nahe dem Toraschrein"]])
 
     page_break(doc)
-    h1(doc, "11. Schnellkontrolle für Eltern")
+    h1(doc, "11. Neue Karteikartenfragen")
+    h2(doc, "Christentum K8 bis K15")
+    table(doc, ["Frage", "Präzise Lernantwort"], [
+        ["Warum ist der Sonntag heilig?", "Er erinnert an die Auferstehung Jesu; Christinnen und Christen feiern Gottesdienst."],
+        ["Drei Personen der Dreifaltigkeit", "Vater, Sohn und Heiliger Geist."],
+        ["Grosse Glaubensrichtungen", "Drei: römisch-katholisch, evangelisch/reformiert und orthodox."],
+        ["Katholisches Oberhaupt", "Der Papst."],
+        ["Reformation", "Für das Arbeitsblatt: Martin Luther. Historisch gab es mehrere Reformatoren."],
+        ["Orthodoxe Heiligenbilder", "Ikonen."],
+        ["Beispiel für eine Freikirche", "Zum Beispiel Baptisten, Methodisten, Mennoniten oder Pfingstgemeinden."],
+        ["Hoffnung bei einer Pilgerreise", "Den Glauben vertiefen, beten, sich auf Gott besinnen und Gemeinschaft erleben."],
+    ], [2.3, 4.2], 9.0)
+    h2(doc, "Judentum K1 bis K13")
+    table(doc, ["Frage", "Präzise Lernantwort"], [
+        ["Alter und Zahl", "Für die Karteikarte: rund 4000 Jahre und rund 14 Millionen. Aktuelle Schätzungen liegen höher und hängen von der Definition ab."],
+        ["Land mit den meisten Juden", "Israel; danach folgen die USA."],
+        ["Bund mit Abraham", "Gott schloss nach jüdischer Überlieferung einen Bund mit Abraham und versprach ihm zahlreiche Nachkommen."],
+        ["Erwarteter Erlöser", "Messias."],
+        ["Symbol", "Im Lernpaket: Davidstern. Die Menora ist ebenfalls ein wichtiges jüdisches Symbol."],
+        ["Heilige Schrift", "Tanach; sein erster und zentraler Teil ist die Tora."],
+        ["Gebetshaus und Ruhetag", "Synagoge; Schabbat oder Sabbat."],
+        ["Kippa, Tallit, Tefillin", "Kopfbedeckung; Gebetsschal; Gebetsriemen mit Kapseln und Toratexten."],
+        ["Nicht zusammen essen", "Fleisch und Milchprodukte."],
+        ["Hülse am Türpfosten", "Mesusa; sie enthält einen Pergamenttext."],
+        ["Heilige Mauer in Jerusalem", "Westmauer, auch Klagemauer genannt."],
+        ["Rabbiner", "Lehrer und Ausleger der jüdischen Tradition; keine Priester."],
+    ], [2.3, 4.2], 8.6)
+
+    page_break(doc)
+    h1(doc, "12. Genauigkeitsprüfung der Antworten von David")
+    table(doc, ["Arbeitsblatt", "Beurteilung", "Korrektur oder Präzisierung"], [
+        ["Namen Allahs", "teilweise richtig", "Allah; der Wächter; der Liebende. 'Der Geliebte' hat eine andere Bedeutung."],
+        ["Christentum Verbreitung", "falsch", "Das Christentum ist weltweit verbreitet, nicht nur in westlichen Ländern."],
+        ["Koranvortrag", "teilweise richtig", "Kapitel heissen Suren; der Koran wird rezitiert, nicht einfach gesungen."],
+        ["Fünf Säulen", "unvollständig", "Glaubensbekenntnis, Gebet, Zakat, Ramadanfasten und Hadsch; das Gebet fehlte."],
+        ["Inhalt des Glaubens", "falsch", "Vorstellungen, Werte, Verhalten, Regeln, Bräuche, Feste, Gebet und Gemeinschaft."],
+        ["100er-Grafik", "drei Zahlen falsch", "31 Christen, 23 Muslime, 15 Hindus, 1 Jude, 7 Buddhisten, 23 andere/keine."],
+        ["Symbol des Judentums", "vertretbar, aber nicht die Zielantwort", "Die Menora ist jüdisch; für die Zuordnung im Lernpaket wird der Davidstern verlangt."],
+        ["Schabbat", "inhaltlich richtig", "Schreibweise: Schabbat oder Sabbat."],
+    ], [1.55, 1.35, 3.6], 8.6)
+    paragraph(doc, "Nicht beantwortete Zeilen wurden nicht als Antworten von David bewertet.", italic=True, color=MUTED, size=9)
+
+    page_break(doc)
+    h1(doc, "13. Schnellkontrolle für Eltern")
     qblock(doc, [
         ("Welche fünf Religionen?", "Christentum, Islam, Judentum, Hinduismus, Buddhismus."),
         ("Welche drei im Detail?", "Christentum, Islam, Judentum."),
@@ -688,7 +731,50 @@ def build_solutions_spanish():
     table(doc, ["Término", "Explicación"], [["Toraschrein", "arca donde se guardan los rollos de la Torá"], ["Bima", "plataforma de lectura"], ["Ewiges Licht", "luz cercana al arca de la Torá"]], [1.5, 5.0], 9.4)
 
     page_break(doc)
-    h1(doc, "11. Control rápido para familias")
+    h1(doc, "11. Nuevas preguntas de las tarjetas")
+    h2(doc, "Cristianismo K8 a K15")
+    table(doc, ["Pregunta", "Respuesta precisa"], [
+        ["¿Por qué es especial el domingo?", "Recuerda la resurrección de Jesús; los cristianos celebran el culto."],
+        ["Personas de la Trinidad", "Padre, Hijo y Espíritu Santo."],
+        ["Grandes confesiones", "Tres: católica romana, evangélica/reformada y ortodoxa."],
+        ["Cabeza de la Iglesia católica", "El Papa."],
+        ["Reforma", "Para la ficha: Martin Luther. Históricamente participaron varios reformadores."],
+        ["Imágenes ortodoxas", "Iconos, Ikonen en alemán."],
+        ["Ejemplo de iglesia libre", "Por ejemplo, bautistas, metodistas, menonitas o pentecostales."],
+        ["Esperanza de una peregrinación", "Profundizar la fe, rezar, reflexionar sobre Dios y vivir la comunidad."],
+    ], [2.3, 4.2], 9.0)
+    h2(doc, "Judaísmo K1 a K13")
+    table(doc, ["Pregunta", "Respuesta precisa"], [
+        ["Antigüedad y número", "Para la ficha: unos 4000 años y unos 14 millones. Las estimaciones actuales son mayores y dependen de la definición."],
+        ["País con más judíos", "Israel; después, Estados Unidos."],
+        ["Alianza con Abraham", "Según la tradición judía, Dios estableció una alianza con Abraham y le prometió numerosos descendientes."],
+        ["Libertador esperado", "Mesías."],
+        ["Símbolo", "En este paquete: estrella de David. La menorá también es un símbolo judío importante."],
+        ["Escritura sagrada", "Tanaj; su primera parte central es la Torá."],
+        ["Lugar y día", "Sinagoga; Schabbat o Sabbat."],
+        ["Kippa, Tallit, Tefillin", "Cubrecabeza; chal de oración; correas y cajitas con textos de la Torá."],
+        ["No comer juntos", "Carne y productos lácteos."],
+        ["Estuche de la puerta", "Mezuzá; contiene un pergamino con texto sagrado."],
+        ["Muro sagrado de Jerusalén", "Muro Occidental, también llamado Muro de las Lamentaciones."],
+        ["Rabinos", "Maestros e intérpretes de la tradición judía; no son sacerdotes."],
+    ], [2.3, 4.2], 8.6)
+
+    page_break(doc)
+    h1(doc, "12. Comprobación de las respuestas de David")
+    table(doc, ["Ejercicio", "Evaluación", "Corrección o precisión"], [
+        ["Nombres de Allah", "parcial", "Allah; der Wächter; der Liebende. 'Der Geliebte' significa otra cosa."],
+        ["Difusión del cristianismo", "incorrecta", "El cristianismo está extendido por todo el mundo, no solo por países occidentales."],
+        ["Recitación del Corán", "parcial", "Los capítulos son Suren; el Corán se rezitiert, no se describe simplemente como canto."],
+        ["Cinco pilares", "incompleta", "Profesión de fe, oración, zakat, ayuno de Ramadán y peregrinación; faltaba la oración."],
+        ["Contenido de la fe", "incorrecta", "Ideas, valores, conducta, normas, costumbres, fiestas, oración y comunidad."],
+        ["Gráfico de cien", "tres cifras incorrectas", "31 cristianos, 23 musulmanes, 15 hindúes, 1 judío, 7 budistas y 23 otros/ninguna."],
+        ["Símbolo judío", "posible, pero no era la respuesta objetivo", "La menorá es judía; el paquete utiliza la estrella de David para la asociación."],
+        ["Schabbat", "contenido correcto", "Grafía alemana: Schabbat o Sabbat."],
+    ], [1.55, 1.35, 3.6], 8.6)
+    paragraph(doc, "Las líneas vacías no se han evaluado como respuestas de David.", italic=True, color=MUTED, size=9)
+
+    page_break(doc)
+    h1(doc, "13. Control rápido para familias")
     qblock(doc, [("¿Cuáles son las cinco religiones?", "Cristianismo, islam, judaísmo, hinduismo y budismo."), ("¿Cuáles se estudian en detalle?", "Cristianismo, islam y judaísmo."), ("¿Cuáles son monoteístas?", "Judaísmo, cristianismo e islam."), ("Cristianismo en tres palabras", "Kirche - Bibel - Jesus."), ("Islam en tres palabras", "Moschee - Koran - Mohammed."), ("Judaísmo en tres palabras", "Synagoge - Tora - Mose."), ("¿Hira?", "Cueva cerca de La Meca."), ("¿Pascua?", "Resurrección de Jesús según la fe cristiana.")], answers=True)
     h2(doc, "Fuentes")
     paragraph(doc, "Base: los materiales de clase facilitados. Revisión curricular: Lehrplan 21 del cantón de Zug, NMG.12.1, NMG.12.2 y NMG.12.5 (zg.lehrplan.ch). Las soluciones conservan el vocabulario alemán del examen y señalan simplificaciones importantes.")
@@ -763,7 +849,50 @@ def build_solutions_english():
     table(doc, ["Term", "Explanation"], [["Toraschrein", "ark where Torah scrolls are kept"], ["Bima", "raised reading platform"], ["Ewiges Licht", "light near the Torah ark"]], [1.5, 5.0], 9.4)
 
     page_break(doc)
-    h1(doc, "11. Quick family check")
+    h1(doc, "11. New study card questions")
+    h2(doc, "Christianity K8 to K15")
+    table(doc, ["Question", "Precise answer"], [
+        ["Why is Sunday special?", "It recalls Jesus' resurrection; Christians gather for worship."],
+        ["Persons of the Trinity", "Father, Son and Holy Spirit."],
+        ["Main confessions", "Three: Roman Catholic, Protestant/Reformed and Orthodox."],
+        ["Head of the Catholic Church", "The Pope."],
+        ["Reformation", "For the worksheet: Martin Luther. Historically, several reformers were involved."],
+        ["Orthodox sacred images", "Icons, Ikonen in German."],
+        ["Example of a free church", "For example Baptists, Methodists, Mennonites or Pentecostals."],
+        ["Hope attached to pilgrimage", "To deepen faith, pray, reflect on God and experience community."],
+    ], [2.3, 4.2], 9.0)
+    h2(doc, "Judaism K1 to K13")
+    table(doc, ["Question", "Precise answer"], [
+        ["Age and population", "For the card: about 4,000 years and about 14 million. Current estimates are higher and depend on definition."],
+        ["Country with most Jews", "Israel, followed by the United States."],
+        ["Covenant with Abraham", "In Jewish tradition, God made a covenant with Abraham and promised him many descendants."],
+        ["Expected deliverer", "The Messiah."],
+        ["Symbol", "In this package: Star of David. The menorah is also an important Jewish symbol."],
+        ["Sacred text", "The Tanakh; its first central part is the Torah."],
+        ["Place and day", "Synagogue; Shabbat or Sabbath."],
+        ["Kippah, tallit, tefillin", "Head covering; prayer shawl; straps and boxes containing Torah passages."],
+        ["Not eaten together", "Meat and dairy products."],
+        ["Doorpost case", "Mezuzah; it contains a parchment with sacred text."],
+        ["Sacred wall in Jerusalem", "The Western Wall, also called the Wailing Wall."],
+        ["Rabbis", "Teachers and interpreters of Jewish tradition; they are not priests."],
+    ], [2.3, 4.2], 8.6)
+
+    page_break(doc)
+    h1(doc, "12. Accuracy check of David's answers")
+    table(doc, ["Worksheet", "Assessment", "Correction or clarification"], [
+        ["Names of Allah", "partly correct", "Allah; der Wächter; der Liebende. 'Der Geliebte' has a different meaning."],
+        ["Christian distribution", "incorrect", "Christianity is worldwide, not limited to western countries."],
+        ["Quran delivery", "partly correct", "Chapters are Suren; the Quran is recited, not simply described as sung."],
+        ["Five pillars", "incomplete", "Profession of faith, prayer, zakat, Ramadan fasting and pilgrimage; prayer was missing."],
+        ["Content of faith", "incorrect", "Beliefs, values, behaviour, rules, customs, festivals, prayer and community."],
+        ["Hundred-square chart", "three figures incorrect", "31 Christians, 23 Muslims, 15 Hindus, 1 Jew, 7 Buddhists and 23 other/none."],
+        ["Jewish symbol", "valid symbol, not the target answer", "The menorah is Jewish; this package uses the Star of David for matching."],
+        ["Shabbat", "content correct", "German spelling: Schabbat or Sabbat."],
+    ], [1.55, 1.35, 3.6], 8.6)
+    paragraph(doc, "Blank lines were not assessed as answers by David.", italic=True, color=MUTED, size=9)
+
+    page_break(doc)
+    h1(doc, "13. Quick family check")
     qblock(doc, [("Which five religions?", "Christianity, Islam, Judaism, Hinduism and Buddhism."), ("Which three in detail?", "Christianity, Islam and Judaism."), ("Which three are monotheistic?", "Judaism, Christianity and Islam."), ("Christianity in three words", "Kirche - Bibel - Jesus."), ("Islam in three words", "Moschee - Koran - Mohammed."), ("Judaism in three words", "Synagoge - Tora - Mose."), ("Hira?", "A cave near Mecca."), ("Easter?", "The resurrection of Jesus according to Christian belief.")], answers=True)
     h2(doc, "Sources")
     paragraph(doc, "Based on the supplied class materials. Curriculum cross-check: Lehrplan 21 for the Canton of Zug, NMG.12.1, NMG.12.2 and NMG.12.5 (zg.lehrplan.ch). The guide retains the German exam vocabulary and flags important simplifications.")

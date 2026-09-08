@@ -1,12 +1,12 @@
 import assert from 'node:assert/strict';
 import { buildAdaptiveRound, questions, shuffleIndices, topics } from '../lib/training.ts';
 
-assert.equal(questions.length, 100, 'the bank must contain 100 questions');
+assert.equal(questions.length, 150, 'the bank must contain 150 questions');
 assert.equal(new Set(questions.map(({ id }) => id)).size, questions.length, 'question ids must be unique');
 assert.equal(new Set(questions.map(({ prompt }) => prompt)).size, questions.length, 'question prompts must be unique');
 
 for (const topic of topics) {
-  assert.equal(questions.filter((question) => question.topic === topic).length, 20, `${topic} must contain 20 questions`);
+  assert.equal(questions.filter((question) => question.topic === topic).length, 30, `${topic} must contain 30 questions`);
 }
 
 for (const question of questions) {
@@ -39,7 +39,7 @@ const itemStats = Object.fromEntries(questions.map(({ id }) => [id, { attempts: 
 itemStats[wrongId] = { attempts: 5, correct: 0 };
 let wrongSelections = 0;
 let masteredSelections = 0;
-for (let seed = 1; seed <= 600; seed += 1) {
+for (let seed = 1; seed <= 2000; seed += 1) {
   let state = seed;
   const random = () => ((state = (state * 1664525 + 1013904223) >>> 0) / 4294967296);
   const selected = buildAdaptiveRound('Christentum', itemStats, { size: 1, random })[0];
