@@ -1,12 +1,19 @@
 import assert from 'node:assert/strict';
 import { buildAdaptiveRound, questions, shuffleIndices, topics } from '../lib/training.ts';
 
-assert.equal(questions.length, 150, 'the bank must contain 150 questions');
+assert.equal(questions.length, 190, 'the bank must contain 190 questions');
 assert.equal(new Set(questions.map(({ id }) => id)).size, questions.length, 'question ids must be unique');
 assert.equal(new Set(questions.map(({ prompt }) => prompt)).size, questions.length, 'question prompts must be unique');
 
+const expectedTopicCounts = {
+  Grundwissen: 30,
+  Christentum: 40,
+  Islam: 40,
+  Judentum: 40,
+  'Gebäude & Schriften': 40,
+};
 for (const topic of topics) {
-  assert.equal(questions.filter((question) => question.topic === topic).length, 30, `${topic} must contain 30 questions`);
+  assert.equal(questions.filter((question) => question.topic === topic).length, expectedTopicCounts[topic], `${topic} has the wrong question count`);
 }
 
 for (const question of questions) {

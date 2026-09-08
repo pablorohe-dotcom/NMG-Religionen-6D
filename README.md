@@ -9,7 +9,7 @@ La aplicación entrena de forma progresiva los objetivos de la primera prueba:
 - visión general de cristianismo, islam, judaísmo, hinduismo y budismo;
 - profundización en cristianismo, islam y judaísmo;
 - edificios, escrituras, símbolos, personas importantes, costumbres y reglas;
-- banco de 150 preguntas (30 por categoría), con opciones y orden aleatorios;
+- banco de 190 preguntas verificadas, con opciones y orden aleatorios;
 - rondas finitas sin preguntas repetidas, explicación inmediata, estrellas, rachas y progreso por tema;
 - práctica adaptativa por pregunta y modo específico para volver sobre los errores;
 - funcionamiento sin conexión después de la primera carga;
