@@ -43,6 +43,54 @@ const religionRows = [
   ['Hinduismus', 'Om', 'vor allem Indien und Südasien', 'vielfältige Gottesvorstellungen', 'Tempel', 'z. B. Veden'],
 ];
 
+type ImageMarker = { id: string; label: string; x: number; y: number; hint: string };
+type ImageMatchPlace = { id: string; title: string; code: string; image: string; alt: string; markers: ImageMarker[] };
+
+const imageMatchPlaces: ImageMatchPlace[] = [
+  {
+    id: 'kirche', title: 'Kirche', code: 'B1', image: '/images/matching-kirche.jpg',
+    alt: 'Beispielhafter Kirchenraum mit markierbaren Einrichtungsgegenständen',
+    markers: [
+      { id: 'orgel', label: 'Orgel', x: 24, y: 22, hint: 'Das grosse Instrument mit vielen Pfeifen.' },
+      { id: 'kruzifix', label: 'Kruzifix', x: 52, y: 22, hint: 'Das Kreuz mit der Darstellung Jesu.' },
+      { id: 'ambo', label: 'Ambo', x: 39, y: 53, hint: 'Das Lesepult für Bibeltexte und Predigt.' },
+      { id: 'altar', label: 'Altar', x: 55, y: 55, hint: 'Der Tisch im Zentrum des Gottesdienstes.' },
+      { id: 'tabernakel', label: 'Tabernakel', x: 68, y: 50, hint: 'Der verschliessbare Schrank für geweihte Hostien.' },
+      { id: 'taufbecken', label: 'Taufbecken', x: 82, y: 58, hint: 'Das Becken, das bei der Taufe verwendet wird.' },
+      { id: 'weihwasserbecken', label: 'Weihwasserbecken', x: 15, y: 77, hint: 'Das kleine Becken nahe beim Eingang.' },
+    ],
+  },
+  {
+    id: 'moschee', title: 'Moschee', code: 'B5', image: '/images/matching-moschee.jpg',
+    alt: 'Beispielhafter Moscheeraum mit markierbaren Bauteilen und Gegenständen',
+    markers: [
+      { id: 'minarett', label: 'Minarett', x: 18, y: 22, hint: 'Der hohe Turm vieler Moscheen.' },
+      { id: 'waschplatz', label: 'Waschplatz', x: 18, y: 46, hint: 'Der Ort für die rituelle Reinigung.' },
+      { id: 'schuhregal', label: 'Schuhregal', x: 10, y: 74, hint: 'Hier werden Schuhe vor dem Gebetsraum abgestellt.' },
+      { id: 'kuppel', label: 'Kuppel', x: 62, y: 10, hint: 'Das gewölbte Dach über dem Gebetsraum.' },
+      { id: 'kalligrafie', label: 'Kalligrafie', x: 57, y: 31, hint: 'Künstlerisch gestaltete Schrift.' },
+      { id: 'mihrab', label: 'Mihrab', x: 57, y: 47, hint: 'Die Gebetsnische zeigt die Richtung nach Mekka.' },
+      { id: 'minbar', label: 'Minbar', x: 81, y: 47, hint: 'Die Kanzel mit Stufen für die Freitagspredigt.' },
+      { id: 'gebetsteppich', label: 'Gebetsteppich', x: 58, y: 72, hint: 'Er kennzeichnet einen sauberen Gebetsplatz.' },
+    ],
+  },
+  {
+    id: 'synagoge', title: 'Synagoge', code: 'B3', image: '/images/matching-synagoge.jpg',
+    alt: 'Beispielhafter Synagogenraum mit markierbaren Einrichtungen und Gebetsgegenständen',
+    markers: [
+      { id: 'ewiges-licht', label: 'Ewiges Licht', x: 50, y: 9, hint: 'Dieses Licht brennt nahe beim Toraschrein.' },
+      { id: 'toraschrein', label: 'Toraschrein', x: 51, y: 31, hint: 'Der Schrein bewahrt die Torarollen auf.' },
+      { id: 'torarolle', label: 'Torarolle', x: 51, y: 45, hint: 'Die handgeschriebene Pergamentrolle der Tora.' },
+      { id: 'bima', label: 'Bima', x: 52, y: 54, hint: 'Das erhöhte Podium für die Toralesung.' },
+      { id: 'siddur', label: 'Siddur', x: 70, y: 45, hint: 'Das jüdische Gebetbuch.' },
+      { id: 'tallit', label: 'Tallit', x: 78, y: 53, hint: 'Der Gebetsschal mit besonderen Fransen.' },
+      { id: 'tefillin', label: 'Tefillin', x: 85, y: 51, hint: 'Lederkapseln mit Riemen und Toratexten.' },
+      { id: 'kippa', label: 'Kippa', x: 91, y: 52, hint: 'Die kleine Kopfbedeckung.' },
+      { id: 'mesusa', label: 'Mesusa', x: 95, y: 27, hint: 'Die Hülse mit Pergamenttext am Türpfosten.' },
+    ],
+  },
+];
+
 function ratio(stat: TopicStat) { return stat.attempts ? stat.correct / stat.attempts : 0; }
 function percent(stat: TopicStat) { return Math.round(ratio(stat) * 100); }
 
@@ -271,7 +319,7 @@ export default function Home() {
     <main>
       <header className="topbar">
         <button className="brand plainButton" onClick={() => setSection('start')} aria-label="Startseite"><span className="brandMark">W</span><span>Davids Weltreligionen-Training</span></button>
-        <nav className="desktopNav" aria-label="Hauptnavigation">{[['start','Start'],['lernen','Lernen'],['training','Trainieren'],['progress','Fortschritt']].map(([key,label]) => <button key={key} className={section === key ? 'navButton active' : 'navButton'} onClick={() => key === 'training' ? startTraining('Alle') : setSection(key)}>{label}</button>)}</nav>
+        <nav className="desktopNav" aria-label="Hauptnavigation">{[['start','Start'],['lernen','Lernen'],['bildquiz','Bild-Quiz'],['training','Trainieren'],['progress','Fortschritt']].map(([key,label]) => <button key={key} className={section === key ? 'navButton active' : 'navButton'} onClick={() => key === 'training' ? startTraining('Alle') : setSection(key)}>{label}</button>)}</nav>
         <div className="topActions"><button className={`cloudButton ${cloudState}`} onClick={() => setShowSync(true)}><span>●</span>{cloudState === 'synced' ? 'Mit Eltern verbunden' : cloudState === 'offline' ? 'Offline · wird später gesendet' : 'Fortschritt verbinden'}</button><button className="installButton" onClick={installApp}>＋ App installieren</button></div>
       </header>
 
@@ -280,11 +328,12 @@ export default function Home() {
         <aside className="progressCard" aria-label="Lernfortschritt"><div className="orbit" style={{'--progress': `${overall * 3.6}deg`} as React.CSSProperties}><span>✦</span><b>{overall}%</b></div><div><p className="tinyLabel">DEIN WEG</p><h2>{level}</h2><p>{progress.totalAttempts ? `${progress.totalAttempts} Fragen gelöst · ${progress.stars} Sterne` : 'Löse die erste Frage und sammle deinen ersten Stern.'}</p></div></aside>
       </section>
 
-      <div className="mobileNav" aria-label="Mobile Navigation">{[['start','⌂','Start'],['lernen','◫','Lernen'],['training','✦','Training'],['progress','◔','Fortschritt']].map(([key,icon,label]) => <button key={key} className={section === key ? 'active' : ''} onClick={() => key === 'training' ? startTraining('Alle') : setSection(key)}><span>{icon}</span>{label}</button>)}</div>
+      <div className="mobileNav" aria-label="Mobile Navigation">{[['start','⌂','Start'],['lernen','◫','Lernen'],['bildquiz','◎','Bild-Quiz'],['training','✦','Training'],['progress','◔','Fortschritt']].map(([key,icon,label]) => <button key={key} className={section === key ? 'active' : ''} onClick={() => key === 'training' ? startTraining('Alle') : setSection(key)}><span>{icon}</span>{label}</button>)}</div>
 
       <section id="content" className="contentShell">
         {section === 'start' && <Dashboard progress={progress} onStart={startTraining} />}
-        {section === 'lernen' && <Learn onStart={startTraining} />}
+        {section === 'lernen' && <Learn onStart={startTraining} onImageMatch={() => setSection('bildquiz')} />}
+        {section === 'bildquiz' && <ImageMatchingQuiz />}
         {section === 'training' && <section className="mission">
           <div className="missionTop"><div><p className="eyebrow">{roundMode === 'mistakes' ? 'FEHLER GEZIELT ÜBEN' : 'ADAPTIVES TRAINING'}</p><h2>{roundComplete ? 'Runde geschafft!' : current.topic}</h2></div><span className="starPill">✦ {progress.stars}</span></div>
           <div className="filterRow">{(['Alle', ...topics] as const).map((topic) => <button key={topic} className={filter === topic && roundMode === 'adaptive' ? 'chip active' : 'chip'} onClick={() => startTraining(topic)}>{topic}</button>)}{mistakeIds.length > 0 && <button className={roundMode === 'mistakes' ? 'chip active mistakeChip' : 'chip mistakeChip'} onClick={startMistakeTraining}>↻ Fehler üben ({mistakeIds.length})</button>}</div>
@@ -316,11 +365,11 @@ function Dashboard({ progress, onStart }: { progress: Progress; onStart: (topic:
   ].map(([number,title,copy,topic]) => <article className="routeCard" key={number}><span className="routeNo">{number}</span><h3>{title}</h3><p>{copy}</p><div className="miniBar"><span style={{width:`${percent(progress.topics[topic as Topic])}%`}} /></div><button onClick={() => onStart(topic as Topic)}>Mission öffnen →</button></article>)}</div><aside className="scopeNote"><span>✓</span><div><strong>Genau auf Prüfung Teil 1 begrenzt</strong><p>Buddhismus und Hinduismus kommen nur im gemeinsamen Überblick vor. Ihre Detailthemen gehören laut Lernzielblatt zu Teil 2.</p></div></aside><section className="downloadPanel"><div className="downloadIcon" aria-hidden="true">📘</div><div><p className="eyebrow">DEIN LERNHEFT</p><h3>Alles für Prüfung Teil 1 zum Nachlesen</h3><p>Der Stoff in klaren Tabellen, Merksätzen und einer Probeprüfung – auch zum Ausdrucken.</p></div><a className="primaryButton small" href="/materials/Lernheft_Pruefung_1_David_DE.pdf" download>Lernheft als PDF ↓</a></section></>;
 }
 
-function Learn({ onStart }: { onStart: (topic: Topic | 'Alle') => void }) {
+function Learn({ onStart, onImageMatch }: { onStart: (topic: Topic | 'Alle') => void; onImageMatch: () => void }) {
   return <><div className="sectionHeading"><div><p className="eyebrow">LERNKARTEN</p><h2>Das musst du wirklich können</h2></div><button className="primaryButton small" onClick={() => onStart('Alle')}>Wissen testen →</button></div>
     <section className="studyBlock"><div className="blockTitle"><span>01</span><div><h3>Die fünf Weltreligionen</h3><p>Der gemeinsame Überblick für Teil 1 und Teil 2</p></div></div><div className="tableWrap"><table><thead><tr><th>Religion</th><th>Symbol</th><th>Verbreitung</th><th>Gottesvorstellung</th><th>Gebäude</th><th>Schrift</th></tr></thead><tbody>{religionRows.map((row) => <tr key={row[0]}>{row.map((cell) => <td key={cell}>{cell}</td>)}</tr>)}</tbody></table></div><p className="finePrint">* Der Halbmond ist ein verbreitetes kulturelles Zeichen des Islams, aber kein überall verbindliches offizielles Symbol. Für die Prüfung gilt die Zuordnung im Lernheft.</p></section>
     <section className="studyBlock"><div className="blockTitle"><span>02</span><div><h3>Die drei Prüfungsreligionen</h3><p>Gemeinsamkeiten erkennen, Unterschiede sachlich benennen</p></div></div><div className="religionGrid"><ReligionCard symbol="✝" name="Christentum" color="violet" facts={['Gott: ein Gott · Dreifaltigkeit','Schrift: Bibel','Gebäude: Kirche','Wichtige Person: Jesus Christus','Bräuche: Gebet, Gottesdienst, Weihnachten, Ostern','Regeln: Nächstenliebe, Zehn Gebote']} onStart={() => onStart('Christentum')} /><ReligionCard symbol="☾" name="Islam" color="green" facts={['Gott: Allah (arabisch: Gott)','Schrift: Koran','Gebäude: Moschee','Wichtige Person: Prophet Mohammed','Bräuche: Gebet, Ramadan, Feste','Regeln: fünf Säulen']} onStart={() => onStart('Islam')} /><ReligionCard symbol="✡" name="Judentum" color="blue" facts={['Gott: ein Gott','Schrift: Tora/Tanach','Gebäude: Synagoge','Wichtige Personen: z. B. Abraham, Mose','Bräuche: Schabbat, Feste','Regeln: Gebote, koschere Lebensweise']} onStart={() => onStart('Judentum')} /></div><aside className="memoryLine"><strong>3er-Merksatz:</strong> Kirche–Bibel–Jesus · Moschee–Koran–Mohammed · Synagoge–Tora–Mose</aside></section>
-    <Timeline /><Buildings onStart={onStart} /></>;
+    <Timeline /><Buildings onStart={onStart} onImageMatch={onImageMatch} /></>;
 }
 
 function ReligionCard({ symbol, name, color, facts, onStart }: { symbol: string; name: string; color: string; facts: string[]; onStart: () => void }) {
@@ -331,13 +380,74 @@ function Timeline() {
   return <section className="studyBlock"><div className="blockTitle"><span>03</span><div><h3>Jesus und Mohammed</h3><p>Glaube und Geschichte respektvoll unterscheiden</p></div></div><div className="timelineColumns"><article><p className="eyebrow">JESUS · CHRISTENTUM</p>{[['vor über 2000 Jahren','Jude aus Nazareth; nach den Evangelien Geburt in Bethlehem'],['ca. 30 Jahre','Wanderprediger; spricht von Gottes Liebe und Nächstenliebe'],['ca. 33','Kreuzigung in Jerusalem'],['nach christlichem Glauben','Auferstehung am dritten Tag; später Himmelfahrt']].map(([when,what]) => <div className="timeItem" key={when}><strong>{when}</strong><span>{what}</span></div>)}</article><article><p className="eyebrow">MOHAMMED · ISLAM</p>{[['ca. 570','Geburt in Mekka; früh Waise, später Händler'],['ca. 610','laut islamischer Überlieferung erste Offenbarung durch Gabriel in der Höhle Hira'],['622','Auswanderung von Mekka nach Medina (Hidschra)'],['632','Tod in Medina; Offenbarungen werden später im Koran gesammelt']].map(([when,what]) => <div className="timeItem" key={when}><strong>{when}</strong><span>{what}</span></div>)}</article></div><p className="sourceNote">Prüfungs-Tipp: Formuliere „Christinnen und Christen glauben …“ oder „Nach islamischer Überlieferung …“, wenn du eine Glaubensaussage erklärst.</p></section>;
 }
 
-function Buildings({ onStart }: { onStart: (topic: Topic | 'Alle') => void }) {
+function Buildings({ onStart, onImageMatch }: { onStart: (topic: Topic | 'Alle') => void; onImageMatch: () => void }) {
   const cards = [
     { image:'/images/church.jpg', title:'Katholische Kirche', labels:['Altar','Ambo','Tabernakel','Taufbecken','Kreuz/Kruzifix','Orgel'], alt:'Innenraum einer katholischen Kirche in Spreitenbach' },
     { image:'/images/mosque.jpg', title:'Moschee', labels:['Gebetsraum','Mihrab (Gebetsnische)','Qibla (Richtung Mekka)','Minbar (Kanzel)','Gebetsteppiche','Ort der Waschung'], alt:'Mihrab im Innenraum einer Moschee' },
     { image:'/images/synagogue.jpg', title:'Synagoge', labels:['Toraschrein','Torarollen','Bima/Lesepult','Ewiges Licht','Sitzplätze'], alt:'Innenraum einer Synagoge mit Torarollen' },
   ];
-  return <section className="studyBlock"><div className="blockTitle"><span>04</span><div><h3>Heilige Räume erkennen</h3><p>Bild ansehen, Begriffe laut erklären, danach ohne Hilfe testen</p></div></div><div className="buildingGrid">{cards.map((card) => <article className="buildingCard" key={card.title}><img src={card.image} alt={card.alt}/><div><h4>{card.title}</h4><div className="labelCloud">{card.labels.map((label) => <span key={label}>{label}</span>)}</div></div></article>)}</div><button className="primaryButton small" onClick={() => onStart('Gebäude & Schriften')}>Gebäude-Quiz starten →</button></section>;
+  return <section className="studyBlock"><div className="blockTitle"><span>04</span><div><h3>Heilige Räume erkennen</h3><p>Bild ansehen, Begriffe laut erklären, danach ohne Hilfe testen</p></div></div><div className="buildingGrid">{cards.map((card) => <article className="buildingCard" key={card.title}><img src={card.image} alt={card.alt}/><div><h4>{card.title}</h4><div className="labelCloud">{card.labels.map((label) => <span key={label}>{label}</span>)}</div></div></article>)}</div><div className="buttonRow"><button className="primaryButton small" onClick={onImageMatch}>Bild und Wörter zuordnen →</button><button className="secondaryButton" onClick={() => onStart('Gebäude & Schriften')}>Fragen-Quiz starten</button></div></section>;
+}
+
+function ImageMatchingQuiz() {
+  const [placeIndex, setPlaceIndex] = useState(0);
+  const [activeMarker, setActiveMarker] = useState<string | null>(null);
+  const [matches, setMatches] = useState<Record<string, string>>({});
+  const [attempts, setAttempts] = useState(0);
+  const [feedback, setFeedback] = useState<{ tone: 'success' | 'retry' | 'info'; text: string }>({ tone: 'info', text: 'Wähle zuerst eine Nummer im Bild.' });
+  const place = imageMatchPlaces[placeIndex];
+  const solvedCount = Object.keys(matches).length;
+  const complete = solvedCount === place.markers.length;
+  const words = useMemo(() => [...place.markers].sort((a, b) => a.label.localeCompare(b.label, 'de')), [place]);
+
+  function resetRound(nextIndex = placeIndex) {
+    setPlaceIndex(nextIndex);
+    setActiveMarker(null);
+    setMatches({});
+    setAttempts(0);
+    setFeedback({ tone: 'info', text: 'Wähle zuerst eine Nummer im Bild.' });
+  }
+
+  function chooseMarker(id: string) {
+    if (matches[id]) return;
+    setActiveMarker(id);
+    setFeedback({ tone: 'info', text: 'Gut. Wähle jetzt den passenden Begriff.' });
+  }
+
+  function chooseWord(label: string) {
+    if (!activeMarker) {
+      setFeedback({ tone: 'retry', text: 'Tippe zuerst auf eine freie Nummer im Bild.' });
+      return;
+    }
+    const marker = place.markers.find((item) => item.id === activeMarker);
+    if (!marker) return;
+    setAttempts((value) => value + 1);
+    if (marker.label === label) {
+      setMatches((old) => ({ ...old, [marker.id]: label }));
+      setActiveMarker(null);
+      setFeedback({ tone: 'success', text: `Richtig: ${label}. ${marker.hint}` });
+    } else {
+      setFeedback({ tone: 'retry', text: `Noch nicht. Tipp: ${marker.hint}` });
+    }
+  }
+
+  const usedLabels = new Set(Object.values(matches));
+  return <section className="imageQuizShell">
+    <div className="sectionHeading imageQuizHeading"><div><p className="eyebrow">NEU · BILD UND WORT</p><h2>Was gehört wohin?</h2></div><p>Tippe auf eine Nummer im Bild und danach auf den passenden deutschen Begriff. Ein Hinweis hilft dir, wenn die Zuordnung noch nicht stimmt.</p></div>
+    <div className="placeTabs" role="tablist" aria-label="Religiösen Raum wählen">{imageMatchPlaces.map((item, index) => <button key={item.id} role="tab" aria-selected={index === placeIndex} className={index === placeIndex ? 'placeTab active' : 'placeTab'} onClick={() => resetRound(index)}><span>{item.code}</span>{item.title}</button>)}</div>
+    <div className="imageMatchCard">
+      <div className="imageMatchTop"><div><p className="eyebrow">{place.code} · PRÜFUNG TEIL 1</p><h3>{place.title}</h3></div><div className="matchScore"><strong>{solvedCount}/{place.markers.length}</strong><span>zugeordnet</span></div></div>
+      <div className="imageMatchLayout">
+        <div className="annotatedImage">
+          <img src={place.image} alt={place.alt}/>
+          {place.markers.map((marker, index) => <button key={marker.id} type="button" aria-label={`Markierung ${index + 1}`} aria-pressed={activeMarker === marker.id} disabled={Boolean(matches[marker.id])} className={`imageMarker${activeMarker === marker.id ? ' active' : ''}${matches[marker.id] ? ' matched' : ''}`} style={{ left: `${marker.x}%`, top: `${marker.y}%` }} onClick={() => chooseMarker(marker.id)}><span>{index + 1}</span>{matches[marker.id] && <b>✓</b>}</button>)}
+        </div>
+        <aside className="wordBank" aria-label="Wortbank"><div><p className="eyebrow">WORTBANK</p><h4>Passenden Begriff wählen</h4></div><div className="wordChoices">{words.map((word) => <button key={word.id} type="button" disabled={usedLabels.has(word.label)} className={usedLabels.has(word.label) ? 'wordChoice matched' : 'wordChoice'} onClick={() => chooseWord(word.label)}>{usedLabels.has(word.label) && <span>✓</span>}{word.label}</button>)}</div></aside>
+      </div>
+      <div className={`matchFeedback ${feedback.tone}`} role="status"><span>{feedback.tone === 'success' ? '✓' : feedback.tone === 'retry' ? '?' : '1–2'}</span><p>{complete ? `Alles richtig! Du hast ${place.markers.length} Begriffe in ${attempts} Versuchen zugeordnet.` : feedback.text}</p></div>
+      <div className="imageMatchFooter"><span>Die Bilder zeigen beispielhafte Räume; Aussehen und Ausstattung können je nach Ort und Tradition variieren.</span><button className="secondaryButton" onClick={() => resetRound()}>↻ Neu beginnen</button></div>
+    </div>
+  </section>;
 }
 
 function ProgressView({ progress, overall, level, onReset, onStart, cloudState, onConnect }: { progress: Progress; overall: number; level: string; onReset: () => void; onStart: (topic: Topic | 'Alle') => void; cloudState: CloudState; onConnect: () => void }) {

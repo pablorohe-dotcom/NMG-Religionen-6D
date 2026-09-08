@@ -130,6 +130,46 @@ td:first-child { font-weight:850; }
 .labelCloud { display:flex; flex-wrap:wrap; gap:6px; }
 .labelCloud span { border-radius:999px; padding:5px 8px; background:#edf2ed; color:#425b56; font-size:11px; font-weight:750; }
 
+.imageQuizShell { max-width:1080px; margin:0 auto; }
+.imageQuizHeading { align-items:center; }
+.placeTabs { margin:0 0 14px; display:flex; gap:8px; overflow-x:auto; }
+.placeTab { min-width:150px; display:flex; align-items:center; gap:9px; border:1px solid var(--line); border-radius:14px; padding:10px 14px; background:rgba(255,255,255,.72); color:var(--muted); cursor:pointer; font-weight:850; }
+.placeTab span { display:grid; place-items:center; width:32px; height:32px; border-radius:10px; background:#e8eee9; color:var(--teal-dark); font-size:11px; }
+.placeTab.active { border-color:var(--teal); background:#eaf4ed; color:var(--ink); box-shadow:0 7px 22px rgba(23,111,101,.09); }
+.placeTab.active span { color:#fff; background:var(--teal); }
+.imageMatchCard { padding:26px; border:1px solid var(--line); border-radius:25px; background:var(--card); box-shadow:0 18px 50px rgba(35,55,52,.08); }
+.imageMatchTop { margin-bottom:17px; display:flex; justify-content:space-between; align-items:flex-end; gap:25px; }
+.imageMatchTop h3 { margin:0; font:700 38px Georgia,serif; }
+.matchScore { display:flex; align-items:baseline; gap:8px; color:var(--muted); }
+.matchScore strong { color:var(--teal-dark); font:700 28px Georgia,serif; }
+.matchScore span { font-size:12px; font-weight:800; }
+.imageMatchLayout { display:grid; grid-template-columns:minmax(0,1.55fr) minmax(235px,.65fr); gap:19px; align-items:start; }
+.annotatedImage { overflow:hidden; position:relative; border-radius:19px; background:#e8e3d7; box-shadow:inset 0 0 0 1px rgba(24,52,58,.1); }
+.annotatedImage img { width:100%; height:auto; display:block; }
+.imageMarker { width:38px; height:38px; position:absolute; z-index:2; display:grid; place-items:center; transform:translate(-50%,-50%); border:3px solid #fff; border-radius:50%; background:var(--teal-dark); color:#fff; cursor:pointer; box-shadow:0 4px 13px rgba(0,0,0,.32); font-size:14px; font-weight:950; transition:transform .15s ease,background .15s ease; }
+.imageMarker:hover:not(:disabled),.imageMarker.active { transform:translate(-50%,-50%) scale(1.16); background:#d5931e; }
+.imageMarker:disabled { cursor:default; opacity:1; }
+.imageMarker.matched { background:#2f9660; }
+.imageMarker b { width:16px; height:16px; position:absolute; right:-7px; bottom:-6px; display:grid; place-items:center; border:2px solid #fff; border-radius:50%; background:#fff; color:#26774d; font-size:11px; }
+.wordBank { min-height:100%; padding:19px; border:1px solid var(--line); border-radius:18px; background:#f5f7f2; }
+.wordBank h4 { margin:0 0 14px; font:700 22px Georgia,serif; }
+.wordChoices { display:grid; gap:7px; }
+.wordChoice { min-height:42px; display:flex; align-items:center; gap:8px; border:1px solid #d4ddd5; border-radius:11px; padding:9px 11px; background:#fff; color:var(--ink); text-align:left; cursor:pointer; font-size:13px; font-weight:800; }
+.wordChoice:hover:not(:disabled) { border-color:var(--teal); background:#f0f8f3; }
+.wordChoice.matched { border-color:#bcdcc8; background:#e9f6ed; color:#397157; cursor:default; }
+.wordChoice span { color:#2f9660; }
+.matchFeedback { min-height:58px; margin-top:17px; padding:13px 16px; display:flex; align-items:center; gap:12px; border-radius:14px; line-height:1.45; }
+.matchFeedback>span { width:31px; height:31px; display:grid; place-items:center; flex:0 0 auto; border-radius:50%; font-size:12px; font-weight:900; }
+.matchFeedback p { margin:0; }
+.matchFeedback.info { background:#edf3f1; color:#395a55; }
+.matchFeedback.info>span { background:#dce9e4; color:var(--teal-dark); }
+.matchFeedback.success { background:#e9f6ed; color:#175c38; }
+.matchFeedback.success>span { background:#2f9660; color:#fff; }
+.matchFeedback.retry { background:#fff2dc; color:#795117; }
+.matchFeedback.retry>span { background:#e9b657; color:#fff; }
+.imageMatchFooter { margin-top:15px; display:flex; justify-content:space-between; align-items:center; gap:22px; color:var(--muted); font-size:11px; line-height:1.45; }
+.imageMatchFooter .secondaryButton { min-height:40px; flex:0 0 auto; padding:8px 13px; font-size:12px; }
+
 .statGrid { display:grid; grid-template-columns:repeat(3,1fr); gap:14px; }
 .statGrid article { padding:23px; text-align:center; border:1px solid var(--line); border-radius:20px; background:var(--card); }
 .statGrid span { font-size:27px; }
@@ -277,7 +317,7 @@ footer p { max-width:550px; margin:6px 0 0; line-height:1.5; }
   .materialsGrid { grid-template-columns:1fr 1fr; }
   .parentGrid { grid-template-columns:1fr; }
   .parentControlGrid { grid-template-columns:1fr; }
-  .mobileNav { position:fixed; left:12px; right:12px; bottom:10px; z-index:10; display:grid; grid-template-columns:repeat(4,1fr); padding:7px; border:1px solid #d4ddd5; border-radius:18px; background:rgba(255,254,250,.94); box-shadow:0 12px 40px rgba(26,47,43,.2); backdrop-filter:blur(12px); }
+  .mobileNav { position:fixed; left:12px; right:12px; bottom:10px; z-index:10; display:grid; grid-template-columns:repeat(5,1fr); padding:7px; border:1px solid #d4ddd5; border-radius:18px; background:rgba(255,254,250,.94); box-shadow:0 12px 40px rgba(26,47,43,.2); backdrop-filter:blur(12px); }
   .mobileNav button { display:grid; gap:2px; justify-items:center; border:0; border-radius:12px; padding:6px; background:transparent; color:var(--muted); font-size:10px; font-weight:800; }
   .mobileNav button span { font-size:20px; }
   .mobileNav button.active { color:#fff; background:var(--teal-dark); }
@@ -299,6 +339,14 @@ footer p { max-width:550px; margin:6px 0 0; line-height:1.5; }
   .timelineColumns { grid-template-columns:1fr; }
   .buildingCard { display:block; }
   .buildingCard img { height:220px; min-height:0; }
+  .imageMatchCard { padding:18px 14px; }
+  .imageMatchTop { align-items:flex-start; }
+  .imageMatchTop h3 { font-size:31px; }
+  .matchScore { display:grid; justify-items:end; gap:0; }
+  .imageMatchLayout { grid-template-columns:1fr; }
+  .imageMarker { width:34px; height:34px; }
+  .wordChoices { grid-template-columns:1fr 1fr; }
+  .imageMatchFooter { align-items:flex-start; flex-direction:column; }
   .missionFooter { align-items:stretch; flex-direction:column; }
   .masteryRow { grid-template-columns:1fr 43px; }
   .masteryRow .wideBar { grid-column:1/3; grid-row:2; }
