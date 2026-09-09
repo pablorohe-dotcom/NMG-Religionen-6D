@@ -116,6 +116,17 @@ td:first-child { font-weight:850; }
 .religionCard ul { min-height:180px; margin:0 0 17px; padding-left:19px; color:#445b60; line-height:1.55; font-size:14px; }
 .religionCard button { border:0; padding:0; background:transparent; color:var(--teal-dark); cursor:pointer; font-weight:850; }
 .memoryLine,.sourceNote { margin:20px 0 0; padding:15px 17px; border-left:4px solid var(--sun); border-radius:0 11px 11px 0; background:#fff7df; line-height:1.55; }
+.leadersStudy { margin-top:22px; padding:20px; border:1px solid var(--line); border-radius:18px; background:#f8faf6; }
+.leadersHeading h4 { margin:2px 0 5px; font:700 24px Georgia,serif; }
+.leadersHeading>p:last-child { margin:0; color:var(--muted); font-size:13px; }
+.leadersGrid { margin-top:16px; display:grid; grid-template-columns:repeat(3,1fr); gap:12px; }
+.leadersGrid>article { overflow:hidden; border:1px solid var(--line); border-radius:15px; background:#fff; }
+.leaderReligion { padding:11px 13px; display:flex; align-items:center; gap:9px; background:#eaf2ed; color:var(--teal-dark); }
+.leaderReligion span { width:28px; height:28px; display:grid; place-items:center; border-radius:50%; background:var(--teal-dark); color:#fff; }
+.leaderPerson { padding:12px 13px; border-top:1px solid var(--line); }
+.leaderPerson:first-of-type { border-top:0; }
+.leaderPerson strong { font-size:13px; }
+.leaderPerson p { margin:3px 0 0; color:var(--muted); font-size:11px; line-height:1.45; }
 .timelineColumns { display:grid; grid-template-columns:1fr 1fr; gap:24px; }
 .timelineColumns article { padding:21px; border-radius:17px; background:#f5f7f2; }
 .timeItem { padding:13px 0 13px 18px; display:grid; gap:4px; border-left:2px solid #bbccc4; position:relative; }
@@ -130,6 +141,12 @@ td:first-child { font-weight:850; }
 .labelCloud { display:flex; flex-wrap:wrap; gap:6px; }
 .labelCloud span { border-radius:999px; padding:5px 8px; background:#edf2ed; color:#425b56; font-size:11px; font-weight:750; }
 .studyPlaceTabs { margin-bottom:16px; }
+.roomExplorerToolbar { margin-bottom:16px; display:flex; align-items:center; justify-content:space-between; gap:12px; }
+.roomExplorerToolbar .studyPlaceTabs { margin-bottom:0; }
+.markerToggle { min-height:39px; flex:0 0 auto; display:flex; align-items:center; gap:7px; border:1px solid #bdcec5; border-radius:999px; padding:8px 12px; background:#fff; color:var(--teal-dark); cursor:pointer; font-size:11px; font-weight:850; }
+.markerToggle:hover,.markerToggle:focus-visible { border-color:var(--teal); background:#eef6f1; outline:none; }
+.markerToggle.hidden { border-color:#d7b76f; background:#fff7df; color:#745017; }
+.markerToggle span { font-size:15px; line-height:1; }
 .roomExplorer { display:grid; grid-template-columns:minmax(0,1.55fr) minmax(270px,.65fr); gap:18px; align-items:start; }
 .studyAnnotatedImage { overflow:hidden; position:relative; border-radius:19px; background:#e8e3d7; box-shadow:inset 0 0 0 1px rgba(24,52,58,.1); }
 .studyAnnotatedImage>img { width:100%; height:auto; display:block; }
@@ -164,6 +181,7 @@ td:first-child { font-weight:850; }
 .imageMatchCard { padding:26px; border:1px solid var(--line); border-radius:25px; background:var(--card); box-shadow:0 18px 50px rgba(35,55,52,.08); }
 .imageMatchTop { margin-bottom:17px; display:flex; justify-content:space-between; align-items:flex-end; gap:25px; }
 .imageMatchTop h3 { margin:0; font:700 38px Georgia,serif; }
+.imageMatchActions { display:flex; align-items:flex-end; gap:14px; }
 .matchScore { display:flex; align-items:baseline; gap:8px; color:var(--muted); }
 .matchScore strong { color:var(--teal-dark); font:700 28px Georgia,serif; }
 .matchScore span { font-size:12px; font-weight:800; }
@@ -332,7 +350,7 @@ footer p { max-width:550px; margin:6px 0 0; line-height:1.5; }
   .cloudButton span { font-size:12px; }
   .hero { grid-template-columns:1fr; gap:30px; padding-top:27px; }
   .progressCard { min-height:260px; }
-  .routeGrid,.religionGrid,.buildingGrid { grid-template-columns:1fr; }
+  .routeGrid,.religionGrid,.buildingGrid,.leadersGrid { grid-template-columns:1fr; }
   .religionCard ul { min-height:auto; }
   .buildingCard { display:grid; grid-template-columns:210px 1fr; }
   .buildingCard img { height:100%; min-height:210px; }
@@ -368,12 +386,15 @@ footer p { max-width:550px; margin:6px 0 0; line-height:1.5; }
   .buildingCard img { height:220px; min-height:0; }
   .roomLegend { grid-template-columns:1fr; }
   .roomLegendHeading { grid-column:auto; }
+  .roomExplorerToolbar { align-items:stretch; flex-direction:column; }
+  .roomExplorerToolbar .markerToggle { align-self:flex-start; }
   .studyMarker { width:32px; height:32px; border-width:2px; }
   .studyMarker small { width:160px; left:38px; padding:8px 9px; font-size:10px; }
   .studyMarker.edge small { right:38px; }
   .studyMarker.low small { bottom:38px; }
   .imageMatchCard { padding:18px 14px; }
   .imageMatchTop { align-items:flex-start; }
+  .imageMatchActions { align-items:flex-end; flex-direction:column; gap:8px; }
   .imageMatchTop h3 { font-size:31px; }
   .matchScore { display:grid; justify-items:end; gap:0; }
   .imageMatchLayout { grid-template-columns:1fr; }
