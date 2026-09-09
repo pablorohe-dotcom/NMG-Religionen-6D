@@ -171,6 +171,27 @@ td:first-child { font-weight:850; }
 .roomLegendItem.active>span { color:#fff; background:#d5931e; }
 .roomStudyNote { margin:13px 0 16px; }
 
+.videoStudyBlock { overflow:hidden; }
+.videoSelector { margin-bottom:16px; display:grid; grid-template-columns:repeat(3,1fr); gap:10px; }
+.videoSelect { min-height:64px; display:flex; align-items:center; gap:11px; border:1px solid var(--line); border-radius:15px; padding:10px 13px; background:#fff; color:var(--ink); text-align:left; cursor:pointer; }
+.videoSelect>span { width:38px; height:38px; display:grid; place-items:center; flex:0 0 auto; border-radius:12px; background:#e8eee9; color:var(--teal-dark); font-size:20px; }
+.videoSelect>div { display:grid; gap:2px; }
+.videoSelect strong { font-size:14px; }
+.videoSelect small { color:var(--muted); font-size:11px; font-weight:750; }
+.videoSelect:hover,.videoSelect:focus-visible { border-color:var(--teal); outline:none; }
+.videoSelect.active { border-color:var(--teal); background:#eaf4ed; box-shadow:0 7px 22px rgba(23,111,101,.09); }
+.videoSelect.active>span { background:var(--teal-dark); color:#fff; }
+.srfVideoStage { overflow:hidden; border:1px solid var(--line); border-radius:20px; background:#f5f7f2; }
+.srfVideoIntro { padding:18px 20px; display:flex; align-items:flex-start; justify-content:space-between; gap:20px; }
+.srfVideoIntro h4 { margin:2px 0 5px; font:700 25px Georgia,serif; }
+.srfVideoIntro>div>p:last-child { margin:0; color:var(--muted); font-size:13px; line-height:1.45; }
+.srfBadge { flex:0 0 auto; border-radius:999px; padding:7px 10px; background:#d52b1e; color:#fff; font-size:11px; font-weight:900; }
+.srfVideoFrame { aspect-ratio:16/9; background:#101817; }
+.srfVideoFrame iframe { width:100%; height:100%; display:block; border:0; }
+.srfVideoFooter { padding:13px 20px 15px; display:flex; align-items:center; justify-content:space-between; gap:18px; }
+.srfVideoFooter p { margin:0; color:var(--muted); font-size:11px; line-height:1.45; }
+.srfVideoFooter a { flex:0 0 auto; color:var(--teal-dark); font-size:12px; font-weight:850; }
+
 .imageQuizShell { max-width:1080px; margin:0 auto; }
 .imageQuizHeading { align-items:center; }
 .placeTabs { margin:0 0 14px; display:flex; gap:8px; overflow-x:auto; }
@@ -388,6 +409,8 @@ footer p { max-width:550px; margin:6px 0 0; line-height:1.5; }
   .roomLegendHeading { grid-column:auto; }
   .roomExplorerToolbar { align-items:stretch; flex-direction:column; }
   .roomExplorerToolbar .markerToggle { align-self:flex-start; }
+  .videoSelector { grid-template-columns:1fr; }
+  .srfVideoIntro,.srfVideoFooter { align-items:flex-start; flex-direction:column; }
   .studyMarker { width:32px; height:32px; border-width:2px; }
   .studyMarker small { width:160px; left:38px; padding:8px 9px; font-size:10px; }
   .studyMarker.edge small { right:38px; }

@@ -92,6 +92,30 @@ const imageMatchPlaces: ImageMatchPlace[] = [
   },
 ];
 
+const srfVideos = [
+  {
+    id: 'christentum', symbol: '✝', religion: 'Christentum', duration: '6 Min.',
+    title: 'Weltreligion Christentum erklärt',
+    summary: 'Bibel, Jesus, Dreifaltigkeit sowie wichtige christliche Feste und Konfessionen.',
+    embed: 'https://www.srf.ch/play/embed?urn=urn:srf:video:1ada563d-4dab-47e7-a063-a800e504bc0f',
+    source: 'https://www.srf.ch/play/tv/srf-kids---clip-und-klar/video/weltreligion-christentum-erklaert?urn=urn%3Asrf%3Avideo%3A1ada563d-4dab-47e7-a063-a800e504bc0f',
+  },
+  {
+    id: 'islam', symbol: '☾', religion: 'Islam', duration: '6 Min.',
+    title: 'Weltreligion Islam erklärt',
+    summary: 'Koran, Prophet Mohammed, Ramadan und die fünf Säulen des Islams.',
+    embed: 'https://www.srf.ch/play/embed?urn=urn:srf:video:9fe9156a-a088-4890-9799-345db731e30c',
+    source: 'https://www.srf.ch/play/tv/srf-kids---clip-und-klar/video/weltreligion-islam-erklaert?urn=urn%3Asrf%3Avideo%3A9fe9156a-a088-4890-9799-345db731e30c',
+  },
+  {
+    id: 'judentum', symbol: '✡', religion: 'Judentum', duration: '6 Min.',
+    title: 'Weltreligion Judentum erklärt',
+    summary: 'Tora, Schabbat, jüdische Feste und die Bedeutung koscherer Speisen.',
+    embed: 'https://www.srf.ch/play/embed?urn=urn:srf:video:2f52edd1-e7b1-4d16-8856-f46bac5d09bf',
+    source: 'https://www.srf.ch/play/tv/srf-kids---clip-und-klar/video/weltreligion-judentum-erklaert?urn=urn%3Asrf%3Avideo%3A2f52edd1-e7b1-4d16-8856-f46bac5d09bf',
+  },
+] as const;
+
 function ratio(stat: TopicStat) { return stat.attempts ? stat.correct / stat.attempts : 0; }
 function percent(stat: TopicStat) { return Math.round(ratio(stat) * 100); }
 
@@ -370,7 +394,7 @@ function Learn({ onStart, onImageMatch }: { onStart: (topic: Topic | 'Alle') => 
   return <><div className="sectionHeading"><div><p className="eyebrow">LERNKARTEN</p><h2>Das musst du wirklich können</h2></div><button className="primaryButton small" onClick={() => onStart('Alle')}>Wissen testen →</button></div>
     <section className="studyBlock"><div className="blockTitle"><span>01</span><div><h3>Die fünf Weltreligionen</h3><p>Der gemeinsame Überblick für Teil 1 und Teil 2</p></div></div><div className="tableWrap"><table><thead><tr><th>Religion</th><th>Symbol</th><th>Verbreitung</th><th>Gottesvorstellung</th><th>Gebäude</th><th>Schrift</th></tr></thead><tbody>{religionRows.map((row) => <tr key={row[0]}>{row.map((cell) => <td key={cell}>{cell}</td>)}</tr>)}</tbody></table></div><p className="finePrint">* Der Halbmond ist ein verbreitetes kulturelles Zeichen des Islams, aber kein überall verbindliches offizielles Symbol. Für die Prüfung gilt die Zuordnung im Lernheft.</p></section>
     <section className="studyBlock"><div className="blockTitle"><span>02</span><div><h3>Die drei Prüfungsreligionen</h3><p>Gemeinsamkeiten erkennen, Unterschiede sachlich benennen</p></div></div><div className="religionGrid"><ReligionCard symbol="✝" name="Christentum" color="violet" facts={['Gott: ein Gott · Dreifaltigkeit','Schrift: Bibel','Gebäude: Kirche','Wichtige Person: Jesus Christus','Bräuche: Gebet, Gottesdienst, Weihnachten, Ostern','Regeln: Nächstenliebe, Zehn Gebote']} onStart={() => onStart('Christentum')} /><ReligionCard symbol="☾" name="Islam" color="green" facts={['Gott: Allah (arabisch: Gott)','Schrift: Koran','Gebäude: Moschee','Wichtige Person: Prophet Mohammed','Bräuche: Gebet, Ramadan, Feste','Regeln: fünf Säulen']} onStart={() => onStart('Islam')} /><ReligionCard symbol="✡" name="Judentum" color="blue" facts={['Gott: ein Gott','Schrift: Tora/Tanach','Gebäude: Synagoge','Wichtige Personen: z. B. Abraham, Mose','Bräuche: Schabbat, Feste','Regeln: Gebote, koschere Lebensweise']} onStart={() => onStart('Judentum')} /></div><aside className="memoryLine"><strong>3er-Merksatz:</strong> Kirche–Bibel–Jesus · Moschee–Koran–Mohammed · Synagoge–Tora–Mose</aside><ReligiousLeaders /></section>
-    <Timeline /><Buildings onStart={onStart} onImageMatch={onImageMatch} /></>;
+    <Timeline /><Buildings onStart={onStart} onImageMatch={onImageMatch} /><AdditionalVideos /></>;
 }
 
 function ReligionCard({ symbol, name, color, facts, onStart }: { symbol: string; name: string; color: string; facts: string[]; onStart: () => void }) {
@@ -412,6 +436,16 @@ function Buildings({ onStart, onImageMatch }: { onStart: (topic: Topic | 'Alle')
     </div>
     <p className="finePrint roomStudyNote">Die Bilder zeigen beispielhafte Räume. Ausstattung und Anordnung können je nach Ort und Tradition unterschiedlich sein.</p>
     <div className="buttonRow"><button className="primaryButton small" onClick={onImageMatch}>Jetzt ohne Hilfe zuordnen →</button><button className="secondaryButton" onClick={() => onStart('Gebäude & Schriften')}>Fragen-Quiz starten</button></div>
+  </section>;
+}
+
+function AdditionalVideos() {
+  const [activeId, setActiveId] = useState<(typeof srfVideos)[number]['id']>('christentum');
+  const video = srfVideos.find((item) => item.id === activeId) ?? srfVideos[0];
+
+  return <section className="studyBlock videoStudyBlock"><div className="blockTitle"><span>05</span><div><h3>Die drei Religionen im Video</h3><p>Zusatzmaterial von SRF Kids · Clip und klar!</p></div></div>
+    <div className="videoSelector" role="tablist" aria-label="Religion für das Lernvideo wählen">{srfVideos.map((item) => <button key={item.id} type="button" role="tab" aria-selected={item.id === activeId} className={item.id === activeId ? 'videoSelect active' : 'videoSelect'} onClick={() => setActiveId(item.id)}><span>{item.symbol}</span><div><strong>{item.religion}</strong><small>{item.duration}</small></div></button>)}</div>
+    <article className="srfVideoStage"><div className="srfVideoIntro"><div><p className="eyebrow">{video.religion.toUpperCase()} · ZUSATZMATERIAL</p><h4>{video.title}</h4><p>{video.summary}</p></div><span className="srfBadge">SRF Kids</span></div><div className="srfVideoFrame"><iframe key={video.id} src={video.embed} title={`SRF Kids: ${video.title}`} loading="lazy" allow="autoplay; encrypted-media; fullscreen; picture-in-picture" allowFullScreen /></div><div className="srfVideoFooter"><p>Das Video läuft direkt auf dieser Lernseite. Wähle oben eine andere Religion, um den Film zu wechseln.</p><a href={video.source} target="_blank" rel="noreferrer">Original bei SRF öffnen ↗</a></div></article>
   </section>;
 }
 
