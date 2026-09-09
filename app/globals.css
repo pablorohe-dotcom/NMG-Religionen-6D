@@ -129,6 +129,30 @@ td:first-child { font-weight:850; }
 .buildingCard h4 { margin:0 0 12px; font-family:Georgia,serif; font-size:22px; }
 .labelCloud { display:flex; flex-wrap:wrap; gap:6px; }
 .labelCloud span { border-radius:999px; padding:5px 8px; background:#edf2ed; color:#425b56; font-size:11px; font-weight:750; }
+.studyPlaceTabs { margin-bottom:16px; }
+.roomExplorer { display:grid; grid-template-columns:minmax(0,1.55fr) minmax(270px,.65fr); gap:18px; align-items:start; }
+.studyAnnotatedImage { overflow:hidden; position:relative; border-radius:19px; background:#e8e3d7; box-shadow:inset 0 0 0 1px rgba(24,52,58,.1); }
+.studyAnnotatedImage>img { width:100%; height:auto; display:block; }
+.studyMarker { width:37px; height:37px; position:absolute; z-index:2; display:grid; place-items:center; transform:translate(-50%,-50%); border:3px solid #fff; border-radius:50%; background:var(--teal-dark); color:#fff; cursor:pointer; box-shadow:0 4px 13px rgba(0,0,0,.32); font-size:13px; font-weight:950; }
+.studyMarker:hover,.studyMarker:focus-visible,.studyMarker.active { z-index:4; background:#d5931e; transform:translate(-50%,-50%) scale(1.12); outline:none; }
+.studyMarker small { width:195px; visibility:hidden; opacity:0; position:absolute; left:46px; top:50%; transform:translateY(-50%) scale(.96); padding:10px 12px; border:1px solid rgba(24,52,58,.15); border-radius:11px; background:#fffefa; color:var(--ink); box-shadow:0 9px 28px rgba(0,0,0,.2); text-align:left; font-size:11px; font-weight:500; line-height:1.35; pointer-events:none; transition:opacity .14s ease,transform .14s ease; }
+.studyMarker small strong { display:block; margin-bottom:3px; color:var(--teal-dark); font-size:13px; }
+.studyMarker:hover small,.studyMarker:focus-visible small,.studyMarker.active small { visibility:visible; opacity:1; transform:translateY(-50%) scale(1); }
+.studyMarker.edge small { left:auto; right:46px; }
+.studyMarker.low small { top:auto; bottom:45px; transform:none; }
+.studyMarker.low:hover small,.studyMarker.low:focus-visible small,.studyMarker.low.active small { transform:none; }
+.roomLegend { overflow:hidden; border:1px solid var(--line); border-radius:18px; background:#f5f7f2; }
+.roomLegendHeading { padding:17px 17px 12px; }
+.roomLegendHeading h4 { margin:0; font:700 23px Georgia,serif; }
+.roomLegendHeading>p:last-child { margin:5px 0 0; color:var(--muted); font-size:12px; line-height:1.4; }
+.roomLegendItem { width:100%; display:grid; grid-template-columns:31px 1fr; align-items:start; gap:10px; border:0; border-top:1px solid var(--line); padding:10px 13px; background:transparent; color:var(--ink); text-align:left; cursor:pointer; }
+.roomLegendItem>span { width:29px; height:29px; display:grid; place-items:center; border-radius:9px; background:#e1ebe6; color:var(--teal-dark); font-size:11px; font-weight:950; }
+.roomLegendItem>div { display:grid; gap:2px; }
+.roomLegendItem strong { font-size:13px; }
+.roomLegendItem small { color:var(--muted); font-size:10px; line-height:1.35; }
+.roomLegendItem:hover,.roomLegendItem:focus-visible,.roomLegendItem.active { outline:none; background:#fff4d7; }
+.roomLegendItem.active>span { color:#fff; background:#d5931e; }
+.roomStudyNote { margin:13px 0 16px; }
 
 .imageQuizShell { max-width:1080px; margin:0 auto; }
 .imageQuizHeading { align-items:center; }
@@ -312,6 +336,9 @@ footer p { max-width:550px; margin:6px 0 0; line-height:1.5; }
   .religionCard ul { min-height:auto; }
   .buildingCard { display:grid; grid-template-columns:210px 1fr; }
   .buildingCard img { height:100%; min-height:210px; }
+  .roomExplorer { grid-template-columns:1fr; }
+  .roomLegend { display:grid; grid-template-columns:1fr 1fr; }
+  .roomLegendHeading { grid-column:1/3; }
   .badgeGrid { grid-template-columns:1fr 1fr; }
   .parentStats { grid-template-columns:1fr 1fr; }
   .materialsGrid { grid-template-columns:1fr 1fr; }
@@ -339,6 +366,12 @@ footer p { max-width:550px; margin:6px 0 0; line-height:1.5; }
   .timelineColumns { grid-template-columns:1fr; }
   .buildingCard { display:block; }
   .buildingCard img { height:220px; min-height:0; }
+  .roomLegend { grid-template-columns:1fr; }
+  .roomLegendHeading { grid-column:auto; }
+  .studyMarker { width:32px; height:32px; border-width:2px; }
+  .studyMarker small { width:160px; left:38px; padding:8px 9px; font-size:10px; }
+  .studyMarker.edge small { right:38px; }
+  .studyMarker.low small { bottom:38px; }
   .imageMatchCard { padding:18px 14px; }
   .imageMatchTop { align-items:flex-start; }
   .imageMatchTop h3 { font-size:31px; }

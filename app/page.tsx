@@ -381,12 +381,27 @@ function Timeline() {
 }
 
 function Buildings({ onStart, onImageMatch }: { onStart: (topic: Topic | 'Alle') => void; onImageMatch: () => void }) {
-  const cards = [
-    { image:'/images/church.jpg', title:'Katholische Kirche', labels:['Altar','Ambo','Tabernakel','Taufbecken','Kreuz/Kruzifix','Orgel'], alt:'Innenraum einer katholischen Kirche in Spreitenbach' },
-    { image:'/images/mosque.jpg', title:'Moschee', labels:['Gebetsraum','Mihrab (Gebetsnische)','Qibla (Richtung Mekka)','Minbar (Kanzel)','Gebetsteppiche','Ort der Waschung'], alt:'Mihrab im Innenraum einer Moschee' },
-    { image:'/images/synagogue.jpg', title:'Synagoge', labels:['Toraschrein','Torarollen','Bima/Lesepult','Ewiges Licht','Sitzplätze'], alt:'Innenraum einer Synagoge mit Torarollen' },
-  ];
-  return <section className="studyBlock"><div className="blockTitle"><span>04</span><div><h3>Heilige Räume erkennen</h3><p>Bild ansehen, Begriffe laut erklären, danach ohne Hilfe testen</p></div></div><div className="buildingGrid">{cards.map((card) => <article className="buildingCard" key={card.title}><img src={card.image} alt={card.alt}/><div><h4>{card.title}</h4><div className="labelCloud">{card.labels.map((label) => <span key={label}>{label}</span>)}</div></div></article>)}</div><div className="buttonRow"><button className="primaryButton small" onClick={onImageMatch}>Bild und Wörter zuordnen →</button><button className="secondaryButton" onClick={() => onStart('Gebäude & Schriften')}>Fragen-Quiz starten</button></div></section>;
+  const [placeIndex, setPlaceIndex] = useState(0);
+  const [activeMarker, setActiveMarker] = useState(imageMatchPlaces[0].markers[0].id);
+  const place = imageMatchPlaces[placeIndex];
+
+  function choosePlace(index: number) {
+    setPlaceIndex(index);
+    setActiveMarker(imageMatchPlaces[index].markers[0].id);
+  }
+
+  return <section className="studyBlock"><div className="blockTitle"><span>04</span><div><h3>Heilige Räume erkennen</h3><p>Entdecke die Gegenstände im Bild und lerne ihre Bedeutung</p></div></div>
+    <div className="placeTabs studyPlaceTabs" role="tablist" aria-label="Heiligen Raum zum Lernen wählen">{imageMatchPlaces.map((item, index) => <button key={item.id} role="tab" aria-selected={index === placeIndex} className={index === placeIndex ? 'placeTab active' : 'placeTab'} onClick={() => choosePlace(index)}><span>{item.code}</span>{item.title}</button>)}</div>
+    <div className="roomExplorer">
+      <div className="studyAnnotatedImage">
+        <img src={place.image} alt={place.alt}/>
+        {place.markers.map((marker, index) => <button key={marker.id} type="button" className={`studyMarker${activeMarker === marker.id ? ' active' : ''}${marker.x > 76 ? ' edge' : ''}${marker.y > 68 ? ' low' : ''}`} style={{ left: `${marker.x}%`, top: `${marker.y}%` }} aria-label={`${index + 1}: ${marker.label}. ${marker.hint}`} aria-pressed={activeMarker === marker.id} onMouseEnter={() => setActiveMarker(marker.id)} onFocus={() => setActiveMarker(marker.id)} onClick={() => setActiveMarker(marker.id)}><span>{index + 1}</span><small><strong>{marker.label}</strong>{marker.hint}</small></button>)}
+      </div>
+      <div className="roomLegend"><div className="roomLegendHeading"><p className="eyebrow">{place.code} · {place.title.toUpperCase()}</p><h4>Begriffe im Bild</h4><p>Tippe auf einen Begriff oder einen Punkt im Bild.</p></div>{place.markers.map((marker, index) => <button key={marker.id} type="button" className={activeMarker === marker.id ? 'roomLegendItem active' : 'roomLegendItem'} onMouseEnter={() => setActiveMarker(marker.id)} onFocus={() => setActiveMarker(marker.id)} onClick={() => setActiveMarker(marker.id)}><span>{index + 1}</span><div><strong>{marker.label}</strong><small>{marker.hint}</small></div></button>)}</div>
+    </div>
+    <p className="finePrint roomStudyNote">Die Bilder zeigen beispielhafte Räume. Ausstattung und Anordnung können je nach Ort und Tradition unterschiedlich sein.</p>
+    <div className="buttonRow"><button className="primaryButton small" onClick={onImageMatch}>Jetzt ohne Hilfe zuordnen →</button><button className="secondaryButton" onClick={() => onStart('Gebäude & Schriften')}>Fragen-Quiz starten</button></div>
+  </section>;
 }
 
 function ImageMatchingQuiz() {
