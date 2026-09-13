@@ -498,6 +498,13 @@ footer p { max-width:550px; margin:6px 0 0; line-height:1.5; }
 .videoSelector.two { grid-template-columns:1fr 1fr; }
 .matchingBoard { display:grid; grid-template-columns:1.1fr .9fr; gap:18px; padding:25px; border:1px solid var(--line); border-radius:24px; background:var(--card); box-shadow:0 18px 50px rgba(35,55,52,.08); }
 .matchingBoard h3 { margin:0; font:700 30px Georgia,serif; }
+.matchInstruction { margin-top:20px; padding:17px; display:grid; grid-template-columns:44px 1fr; align-items:center; gap:13px; border:1px solid #e4d19e; border-radius:15px; background:#fff8df; }
+.matchInstruction>span { width:44px; height:44px; display:grid; place-items:center; border-radius:13px; background:#b65b13; color:#fff; font-size:18px; font-weight:900; }
+.matchInstruction>div { display:grid; gap:4px; }
+.matchInstruction small,.choiceLabel { color:#8b4c18; font-size:11px; font-weight:900; letter-spacing:.09em; }
+.matchInstruction strong { font-size:16px; line-height:1.4; }
+.matchStatus { margin:11px 0 0; color:#397157; font-size:13px; font-weight:750; line-height:1.45; }
+.matchStatus.retry { color:#9a4e22; }
 .orderedSolution { margin-top:20px; display:grid; gap:8px; }
 .orderedSolution article { display:flex; align-items:center; gap:11px; padding:11px 13px; border-radius:12px; background:#ebf4ed; }
 .orderedSolution article>span { color:#2e8654; font-weight:900; }
@@ -505,8 +512,10 @@ footer p { max-width:550px; margin:6px 0 0; line-height:1.5; }
 .orderedSolution small { width:24px; height:24px; display:grid; place-items:center; border-radius:7px; background:#fff; color:#397555; font-weight:900; }
 .orderedSolution strong { font-size:13px; }
 .choiceStack { display:grid; align-content:start; gap:8px; }
+.choiceLabel { margin:2px 0 3px; }
 .choiceStack>button { min-height:49px; border:1px solid #d9d7cc; border-radius:12px; padding:11px 13px; background:#fff; text-align:left; cursor:pointer; font-weight:750; }
 .choiceStack>button:hover,.choiceStack>button.active { border-color:#b0601b; background:#fff2d5; }
+.choiceStack>button.wrongChoice { border-color:#cc7447; background:#fff0e7; }
 .matchDone { min-height:220px; display:grid; place-items:center; align-content:center; gap:10px; border-radius:18px; background:#eef4ed; }
 .matchDone>span { font-size:42px; color:#c78223; }
 .matchDone>strong { font:700 24px Georgia,serif; }
