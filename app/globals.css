@@ -518,11 +518,6 @@ footer p { max-width:550px; margin:6px 0 0; line-height:1.5; }
 .choiceStack>button { min-height:49px; border:1px solid #d9d7cc; border-radius:12px; padding:11px 13px; background:#fff; text-align:left; cursor:pointer; font-weight:750; }
 .choiceStack>button:hover,.choiceStack>button.active { border-color:#b0601b; background:#fff2d5; }
 .choiceStack>button.wrongChoice { border-color:#cc7447; background:#fff0e7; }
-.choiceStack.deityChoices { grid-template-columns:1fr 1fr; }
-.choiceStack.deityChoices .choiceLabel,.choiceStack.deityChoices .matchDone { grid-column:1/-1; }
-.choiceStack>button.deityChoice { min-height:142px; display:grid; justify-items:center; align-content:center; gap:7px; padding:9px; text-align:center; }
-.deityChoice img { width:94px; height:94px; display:block; object-fit:contain; }
-.deityChoice span { font-size:14px; }
 .matchDone { min-height:220px; display:grid; place-items:center; align-content:center; gap:10px; border-radius:18px; background:#eef4ed; }
 .matchDone>span { font-size:42px; color:#c78223; }
 .matchDone>strong { font:700 24px Georgia,serif; }
@@ -542,6 +537,4 @@ footer p { max-width:550px; margin:6px 0 0; line-height:1.5; }
 @media (max-width:650px) {
   .routeGridFour,.pathTimeline,.truthGrid,.deityGrid,.videoSelector.two { grid-template-columns:1fr; }
   .routeGridFour .routeCard { min-height:250px; }
-  .choiceStack>button.deityChoice { min-height:126px; }
-  .deityChoice img { width:82px; height:82px; }
 }
