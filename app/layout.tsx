@@ -4,7 +4,7 @@ import './globals.css';
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? 'https://nmg-weltreligionen-training-zug-6.pablorohe.chatgpt.site'),
   title: 'Davids Weltreligionen-Training',
-  description: 'Interaktives NMG-Training zur Prüfung Teil 1.',
+  description: 'Interaktives NMG-Training zu Buddhismus und Hinduismus für Prüfung Teil 2.',
   manifest: '/manifest.webmanifest',
   applicationName: 'Weltreligionen-Training',
   appleWebApp: { capable: true, title: 'NMG Training', statusBarStyle: 'default' },
@@ -14,7 +14,7 @@ export const metadata: Metadata = {
   },
   openGraph: {
     title: 'Weltreligionen-Training',
-    description: 'NMG · Prüfung Teil 1',
+    description: 'NMG · Prüfung Teil 2 · Buddhismus und Hinduismus',
     images: [{ url: '/images/religionen-og.png', width: 1536, height: 1024 }],
     type: 'website',
   },

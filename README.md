@@ -1,15 +1,17 @@
 # NMG Religionen – 6. Klasse
 
-Material de estudio bilingüe y aplicación interactiva en alemán para preparar la **primera prueba** de NMG sobre religiones, elaborados para un alumno de 6.º de Primaria del cantón de Zug.
+Aplicación interactiva en alemán para preparar la **segunda prueba** de NMG sobre religiones, junto con los materiales conservados de la primera parte, para un alumno de 6.º de Primaria del cantón de Zug.
 
 ## Aplicación
 
-La aplicación entrena de forma progresiva los objetivos de la primera prueba:
+La aplicación entrena de forma progresiva los objetivos marcados de la segunda prueba:
 
-- visión general de cristianismo, islam, judaísmo, hinduismo y budismo;
-- profundización en cristianismo, islam y judaísmo;
-- edificios, escrituras, símbolos, personas importantes, costumbres y reglas;
-- banco de 204 preguntas verificadas, con opciones y orden aleatorios;
+- repaso comparativo de las cinco religiones del mundo;
+- profundización en budismo e hinduismo: difusión, símbolo, concepción de lo divino, lugar de culto, escrituras, reglas y costumbres;
+- vida de Buda, cuatro verdades nobles y camino óctuple;
+- descripción guiada de divinidades hindúes;
+- dos vídeos oficiales de SRF Kids integrados en el área de aprendizaje;
+- banco de 200 preguntas verificadas, 40 por bloque, con opciones y orden aleatorios;
 - rondas finitas sin preguntas repetidas, explicación inmediata, estrellas, rachas y progreso por tema;
 - práctica adaptativa por pregunta y modo específico para volver sobre los errores;
 - funcionamiento sin conexión después de la primera carga;

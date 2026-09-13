@@ -3,8 +3,8 @@ import { getSupabaseClient } from './supabase';
 export type CloudState = 'unavailable' | 'connecting' | 'unlinked' | 'synced' | 'offline' | 'error';
 
 export const CURRENT_LEARNING_APP = {
-  key: 'nmg-religionen-pruefung-1',
-  title: 'Weltreligionen · Prüfung 1',
+  key: 'nmg-religionen-pruefung-2',
+  title: 'Weltreligionen · Prüfung 2',
   subject: 'NMG',
 } as const;
 
@@ -19,7 +19,7 @@ export type CloudAttempt = {
   occurred_at: string;
 };
 
-const QUEUE_KEY = 'davids-nmg-cloud-queue-v1';
+const QUEUE_KEY = 'davids-nmg-cloud-queue-teil-2-v1';
 let backupTransport: { url: string; key: string; token: string } | null = null;
 
 function rememberBackupTransport(token?: string) {

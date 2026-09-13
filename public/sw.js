@@ -1,5 +1,5 @@
-const CACHE = 'davids-nmg-v4';
-const CORE = ['/', '/manifest.webmanifest', '/images/app-icon-192.png', '/images/app-icon-512.png', '/images/church.jpg', '/images/mosque.jpg', '/images/synagogue.jpg'];
+const CACHE = 'davids-nmg-teil-2-v1';
+const CORE = ['/', '/manifest.webmanifest', '/images/app-icon-192.png', '/images/app-icon-512.png'];
 
 self.addEventListener('install', (event) => {
   event.waitUntil(caches.open(CACHE).then((cache) => cache.addAll(CORE)).then(() => self.skipWaiting()));
