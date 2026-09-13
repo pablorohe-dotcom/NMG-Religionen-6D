@@ -506,6 +506,11 @@ footer p { max-width:550px; margin:6px 0 0; line-height:1.5; }
 .matchInstruction strong { font-size:16px; line-height:1.4; }
 .matchStatus { margin:11px 0 0; color:#397157; font-size:13px; font-weight:750; line-height:1.45; }
 .matchStatus.retry { color:#9a4e22; }
+.deityReveal { margin-top:15px; padding:17px; display:grid; grid-template-columns:minmax(190px,260px) 1fr; align-items:center; gap:18px; border:1px solid #d7c47d; border-radius:18px; background:linear-gradient(135deg,#fff8dd,#fff); box-shadow:0 12px 30px rgba(46,55,72,.08); }
+.deityReveal>img { width:100%; height:auto; max-height:280px; object-fit:contain; }
+.deityReveal h4 { margin:2px 0 7px; font:700 29px Georgia,serif; color:var(--ink); }
+.deityReveal>div>p:not(.eyebrow) { margin:0; color:var(--ink); font-size:15px; line-height:1.5; }
+.deityReveal small { display:block; margin-top:12px; color:var(--muted); font-size:12px; line-height:1.45; }
 .orderedSolution { margin-top:20px; display:grid; gap:8px; }
 .orderedSolution article { display:flex; align-items:center; gap:11px; padding:11px 13px; border-radius:12px; background:#ebf4ed; }
 .orderedSolution article>img { width:50px; height:50px; flex:0 0 auto; object-fit:contain; border-radius:10px; background:#fff; }
@@ -537,4 +542,6 @@ footer p { max-width:550px; margin:6px 0 0; line-height:1.5; }
 @media (max-width:650px) {
   .routeGridFour,.pathTimeline,.truthGrid,.deityGrid,.videoSelector.two { grid-template-columns:1fr; }
   .routeGridFour .routeCard { min-height:250px; }
+  .deityReveal { grid-template-columns:1fr; text-align:center; }
+  .deityReveal>img { width:min(280px,100%); max-height:none; margin:0 auto; }
 }
