@@ -85,12 +85,18 @@ const MATERIALS: Record<ParentLanguage, ParentMaterial[]> = {
 const PART_2_MATERIALS: Record<ParentLanguage, ParentMaterial[]> = {
   de: [
     { href: '/materials/Lernheft_Pruefung_2_David_DE.pdf', title: 'Lernheft für Prüfung Teil 2', description: 'Wissensseiten, 60 Übungsfragen, Lösungen und Links zu den SRF-Videos' },
+    { href: '/materials/Praxisleitfaden_Familie_Pruefung_2_DE.pdf', title: 'Praxisleitfaden für Familien', description: 'Lernziele, Erklärhilfen, 7-Tage-Plan und mündliche Kontrollfragen' },
+    { href: '/materials/Guia_familias_Prueba_2_ES.pdf', title: 'Guía para familias en español', description: 'Orientación equivalente para acompañar el estudio en casa', language: 'ES' },
   ],
   es: [
     { href: '/materials/Lernheft_Pruefung_2_David_DE.pdf', title: 'Cuaderno para la prueba 2 (alemán)', description: 'Teoría, 60 preguntas, soluciones y enlaces a los vídeos de SRF', language: 'DE' },
+    { href: '/materials/Guia_familias_Prueba_2_ES.pdf', title: 'Guía para familias de la prueba 2', description: 'Objetivos, explicaciones, plan de 7 días y preguntas orales' },
+    { href: '/materials/Praxisleitfaden_Familie_Pruefung_2_DE.pdf', title: 'Guía familiar en alemán', description: 'Versión alemana para practicar el vocabulario de la prueba', language: 'DE' },
   ],
   en: [
     { href: '/materials/Lernheft_Pruefung_2_David_DE.pdf', title: 'Study booklet for Test 2 (German)', description: 'Study pages, 60 questions, solutions and links to the SRF videos', language: 'DE' },
+    { href: '/materials/Praxisleitfaden_Familie_Pruefung_2_DE.pdf', title: 'Family guide (German)', description: 'Learning goals, explanations, seven-day plan and oral review questions', language: 'DE' },
+    { href: '/materials/Guia_familias_Prueba_2_ES.pdf', title: 'Family guide (Spanish)', description: 'Equivalent guidance for supporting study at home', language: 'ES' },
   ],
 };
 
