@@ -46,9 +46,17 @@ export default defineConfig(async () => {
 
   return {
     css: { postcss: { plugins: [tailwindcss()] } },
-    server: isCodexSeatbeltSandbox
-      ? { watch: { useFsEvents: false, usePolling: true } }
-      : undefined,
+    server: {
+      // Vite 8 enables console forwarding automatically inside coding agents.
+      // If the HMR socket reconnects while a preview is restarting, the client
+      // can try to forward the connection error through that same unavailable
+      // socket and flood the page with a recursive error overlay. The browser
+      // console still receives application errors without this forwarding.
+      forwardConsole: false,
+      ...(isCodexSeatbeltSandbox
+        ? { watch: { useFsEvents: false, usePolling: true } }
+        : {}),
+    },
     plugins: [
       vinext(),
       sites(),
