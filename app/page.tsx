@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import Image from 'next/image';
-import { cloudIsConfigured } from '../lib/supabase';
+import { cloudIsConfigured, getSupabaseClient } from '../lib/supabase';
 import { claimPairingCode, createAttempt, getConsolidatedProgress, getLinkedLearner, queueAndSyncAttempt, resetProgressWithPassword, saveProgressBackup, touchLinkedDevice, type CloudState } from '../lib/progress-cloud';
 import { buildAdaptiveRound, questions, shuffleIndices, topics, type ItemStat, type Topic } from '../lib/training';
 
@@ -11,6 +11,7 @@ type Progress = { stars: number; streak: number; bestStreak: number; totalAttemp
 type BeforeInstallPromptEvent = Event & { prompt: () => Promise<void> };
 type Section = 'start' | 'lernen' | 'zuordnen' | 'training' | 'progress';
 const STORAGE_KEY = 'davids-nmg-religionen-teil-2-progress-v1';
+const PARENT_LOGIN_PENDING_KEY = 'nmg-parent-login-pending';
 
 const emptyProgress = (): Progress => ({ stars: 0, streak: 0, bestStreak: 0, totalAttempts: 0, topics: Object.fromEntries(topics.map((topic) => [topic, { attempts: 0, correct: 0 }])) as Record<Topic, TopicStat>, items: {} });
 function normalizeProgress(value: unknown): Progress {
@@ -65,6 +66,27 @@ export default function Home() {
   const [resetPassword, setResetPassword] = useState('');
   const [resetMessage, setResetMessage] = useState('');
   const [resetBusy, setResetBusy] = useState(false);
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const hash = window.location.hash;
+    const isAuthReturn = params.has('code') || params.has('token_hash') || hash.includes('access_token=') || hash.includes('error=');
+    const parentLoginPending = window.localStorage.getItem(PARENT_LOGIN_PENDING_KEY) === '1';
+    if (!isAuthReturn && !parentLoginPending) return;
+
+    const supabase = getSupabaseClient();
+    if (!supabase) return;
+    let active = true;
+    const sendParentHome = (user: { is_anonymous?: boolean } | null | undefined) => {
+      if (!active || !user || user.is_anonymous) return;
+      window.localStorage.removeItem(PARENT_LOGIN_PENDING_KEY);
+      window.location.replace('/parent');
+    };
+
+    void supabase.auth.getSession().then(({ data }) => sendParentHome(data.session?.user));
+    const { data } = supabase.auth.onAuthStateChange((_event, session) => sendParentHome(session?.user));
+    return () => { active = false; data.subscription.unsubscribe(); };
+  }, []);
 
   useEffect(() => {
     let loaded = emptyProgress();

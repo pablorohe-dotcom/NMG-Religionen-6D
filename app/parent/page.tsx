@@ -20,6 +20,7 @@ type ParentMaterial = { href: string; title: string; description: string; langua
 
 const PART_1_APP_KEY = 'nmg-religionen-pruefung-1';
 const DEFAULT_APP_KEY = 'nmg-religionen-pruefung-2';
+const PARENT_LOGIN_PENDING_KEY = 'nmg-parent-login-pending';
 const PART_2_APP: LearningApp = {
   app_key: DEFAULT_APP_KEY,
   title: 'Weltreligionen · Prüfung 2',
@@ -140,6 +141,7 @@ export default function ParentPage() {
       setSignedIn(false); setLoading(false); return;
     }
 
+    window.localStorage.removeItem(PARENT_LOGIN_PENDING_KEY);
     setSignedIn(true);
     const setup = await supabase.rpc('ensure_parent_setup', { p_display_name: 'David' });
     if (setup.error) { setNotice(`${c.error}: ${setup.error.message}`); setLoading(false); return; }
@@ -235,7 +237,10 @@ export default function ParentPage() {
     event.preventDefault();
     if (!supabase || !email.trim()) return;
     setBusy(true); setNotice('');
-    const { error } = await supabase.auth.signInWithOtp({ email: email.trim(), options: { emailRedirectTo: `${window.location.origin}/parent` } });
+    window.localStorage.setItem(PARENT_LOGIN_PENDING_KEY, '1');
+    const redirectUrl = new URL('/parent', window.location.origin).toString();
+    const { error } = await supabase.auth.signInWithOtp({ email: email.trim(), options: { emailRedirectTo: redirectUrl } });
+    if (error) window.localStorage.removeItem(PARENT_LOGIN_PENDING_KEY);
     setNotice(error ? `${c.error}: ${error.message}` : c.sent);
     setBusy(false);
   }
