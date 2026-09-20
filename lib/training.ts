@@ -4,14 +4,14 @@ export type ItemStat = { attempts: number; correct: number };
 
 export const topics: Topic[] = ['Überblick & Vergleich', 'Buddhismus', 'Buddhas Leben & Lehre', 'Hinduismus', 'Hinduistische Gottheiten'];
 
-type Fact = { label: string; prompt: string; correct: string; wrong: [string, string]; explanation: string };
+type Fact = { label: string; prompt: string; reviewPrompt?: string; correct: string; wrong: [string, string]; explanation: string };
 
 function questionsFromFacts(topic: Topic, prefix: string, facts: Fact[]): Question[] {
   return facts.flatMap((fact, index) => {
     const options = [fact.correct, ...fact.wrong];
     return [
       { id: `${prefix}${index + 1}a`, topic, prompt: fact.prompt, options, answer: 0, explanation: fact.explanation },
-      { id: `${prefix}${index + 1}b`, topic, prompt: `Welche Aussage erklärt „${fact.label}“ richtig?`, options, answer: 0, explanation: fact.explanation },
+      { id: `${prefix}${index + 1}b`, topic, prompt: fact.reviewPrompt ?? `David erklärt den Lernpunkt „${fact.label}“. Welche Antwort ist fachlich präzise?`, options, answer: 0, explanation: fact.explanation },
     ];
   });
 }
@@ -44,7 +44,7 @@ const buddhismFacts: Fact[] = [
   { label: 'Buddha', prompt: 'Was bedeutet der Titel „Buddha“?', correct: 'Der Erwachte oder Erleuchtete', wrong: ['Der König aller Tempel', 'Der Schöpfer der Welt'], explanation: 'Buddha ist ein Ehrentitel und bedeutet „der Erwachte“.' },
   { label: 'Siddhartha Gautama', prompt: 'Wer war Siddhartha Gautama?', correct: 'Ein Lehrer aus Nordindien, auf dessen Erkenntnisse der Buddhismus zurückgeht', wrong: ['Ein hinduistischer Schöpfergott', 'Ein römischer Kaiser'], explanation: 'Siddhartha Gautama wurde nach seiner Erleuchtung Buddha genannt.' },
   { label: 'kein zentraler Schöpfergott', prompt: 'Welche Rolle spielt ein Schöpfergott im Buddhismus?', correct: 'Ein Schöpfergott steht nicht im Zentrum der buddhistischen Lehre.', wrong: ['Buddha gilt in allen Schulen als Schöpfergott.', 'Jeder Tempel verehrt zwingend denselben allmächtigen Gott.'], explanation: 'Im Zentrum stehen Buddhas Lehre, die eigene Übung und der Weg aus dem Leiden.' },
-  { label: 'Tempel und Kloster', prompt: 'Welche Orte gehören häufig zum Buddhismus?', correct: 'Tempel und Kloster', wrong: ['Kirche und Synagoge', 'Moschee und Kathedrale'], explanation: 'Buddhistische Gemeinschaften treffen sich je nach Tradition in Tempeln, Klöstern oder Meditationszentren.' },
+  { label: 'Tempel und Kloster', prompt: 'Welche Orte gehören häufig zum Buddhismus?', reviewPrompt: 'Wo können buddhistische Gemeinschaften gemeinsam üben oder religiös leben?', correct: 'Tempel und Kloster', wrong: ['Kirche und Synagoge', 'Moschee und Kathedrale'], explanation: 'Buddhistische Gemeinschaften treffen sich je nach Tradition in Tempeln, Klöstern oder Meditationszentren.' },
   { label: 'Stupa', prompt: 'Was ist eine Stupa?', correct: 'Ein buddhistisches Bauwerk, das an Buddha und seine Lehre erinnert', wrong: ['Ein jüdisches Gebetbuch', 'Eine christliche Kanzel'], explanation: 'Stupas können Reliquien enthalten und sind Orte der Erinnerung und Verehrung.' },
   { label: 'heilige Texte', prompt: 'Welche Aussage zu buddhistischen Schriften stimmt?', correct: 'Es gibt verschiedene Sammlungen; eine alte Sammlung heisst Tripitaka oder Pali-Kanon.', wrong: ['Alle Buddhisten benutzen nur die Bibel.', 'Buddhismus hat grundsätzlich keine überlieferten Texte.'], explanation: 'Buddhistische Schulen überliefern unterschiedliche Textsammlungen. Der Pali-Kanon ist besonders alt.' },
   { label: 'Dharma', prompt: 'Was bedeutet Dharma im Buddhismus?', correct: 'Die Lehre Buddhas und der Weg der Übung', wrong: ['Ein Tempelturm', 'Ein Festessen nach Sonnenuntergang'], explanation: 'Dharma bezeichnet Buddhas Lehre; das Dharma-Rad symbolisiert ihre Weitergabe.' },
@@ -52,7 +52,7 @@ const buddhismFacts: Fact[] = [
   { label: 'Meditation', prompt: 'Wozu dient Meditation in vielen buddhistischen Traditionen?', correct: 'Achtsamkeit, Sammlung und Einsicht zu üben', wrong: ['Reichtum möglichst schnell zu vermehren', 'Einen Schöpfergott sichtbar zu machen'], explanation: 'Meditation hilft, den Geist zu beobachten und heilsame Haltungen zu entwickeln.' },
   { label: 'fünf ethische Regeln', prompt: 'Was ist eine der fünf buddhistischen Übungsregeln für Laien?', correct: 'Lebewesen nicht absichtlich verletzen', wrong: ['Andere zum eigenen Glauben zwingen', 'Immer möglichst viele Dinge besitzen'], explanation: 'Die fünf Regeln fördern unter anderem Gewaltlosigkeit, Ehrlichkeit und einen klaren Geist.' },
   { label: 'Karma', prompt: 'Was bedeutet Karma im buddhistischen Zusammenhang?', correct: 'Absichtsvolle Handlungen haben Folgen.', wrong: ['Jedes Ereignis ist eine unveränderbare Strafe.', 'Nur der Besitz aus einem früheren Leben zählt.'], explanation: 'Karma meint die Wirkung absichtsvoller Handlungen, nicht ein starres Schicksal.' },
-  { label: 'Wiedergeburt', prompt: 'Was gehört in vielen buddhistischen Traditionen zum Kreislauf des Daseins?', correct: 'Wiedergeburt', wrong: ['Die Dreifaltigkeit', 'Die einmalige Pilgerfahrt nach Mekka'], explanation: 'Der Kreislauf von Werden und Wiedergeburt wird Samsara genannt.' },
+  { label: 'Wiedergeburt', prompt: 'Was gehört in vielen buddhistischen Traditionen zum Kreislauf des Daseins?', reviewPrompt: 'Welcher Vorgang wird mit Samsara, dem Kreislauf des Daseins, verbunden?', correct: 'Wiedergeburt', wrong: ['Die Dreifaltigkeit', 'Die einmalige Pilgerfahrt nach Mekka'], explanation: 'Der Kreislauf von Werden und Wiedergeburt wird Samsara genannt.' },
   { label: 'Nirvana', prompt: 'Was bezeichnet Nirvana?', correct: 'Das Erlöschen von Gier, Hass und Verblendung und damit die Befreiung vom Leiden', wrong: ['Einen besonders grossen Tempel', 'Die Geburt eines Schöpfergottes'], explanation: 'Nirvana ist das Ziel des buddhistischen Weges: Befreiung vom Leiden und vom Kreislauf des Daseins.' },
   { label: 'Vesakh', prompt: 'Welches wichtige buddhistische Fest erinnert an Buddha?', correct: 'Vesakh (auch Wesak)', wrong: ['Weihnachten', 'Jom Kippur'], explanation: 'Vesakh erinnert je nach Tradition an Geburt, Erwachen und Tod Buddhas.' },
   { label: 'Mönche und Nonnen', prompt: 'Wie leben buddhistische Mönche und Nonnen häufig?', correct: 'In einer Gemeinschaft mit Regeln, Meditation, Lernen und einfacher Lebensweise', wrong: ['Als Könige mit möglichst viel Besitz', 'Ohne jede Regel oder Gemeinschaft'], explanation: 'Ordensgemeinschaften bewahren und üben Buddhas Lehre; ihre Lebensformen unterscheiden sich je nach Tradition.' },
@@ -80,7 +80,7 @@ const buddhaFacts: Fact[] = [
   { label: 'Buddhas Lebensende', prompt: 'Wie endete Buddhas Leben nach der Überlieferung?', correct: 'Er lehrte viele Jahre und starb im hohen Alter; er ging ins endgültige Nirvana ein.', wrong: ['Er wurde Kaiser von Indien.', 'Er kehrte als Prinz in ein Luxusleben zurück.'], explanation: 'Die Überlieferung berichtet, dass Buddha bis ins hohe Alter lehrte und etwa 80-jährig starb.' },
   { label: 'Siddharthas Familie', prompt: 'Was liess Siddhartha bei seinem Aufbruch nach der Überlieferung zurück?', correct: 'Sein privilegiertes Leben sowie Frau und Sohn', wrong: ['Eine Armee und ein erobertes Reich', 'Ein buddhistisches Kloster, das er schon als Kind leitete'], explanation: 'Die Erzählung betont, wie radikal sein Entschluss zur Suche nach Befreiung war.' },
   { label: 'Alter beim Aufbruch', prompt: 'Wie alt war Siddhartha ungefähr, als er den Palast verliess?', correct: 'Etwa 29 Jahre', wrong: ['Etwa 9 Jahre', 'Etwa 79 Jahre'], explanation: 'Traditionelle Lebensgeschichten nennen ungefähr 29 Jahre für den Beginn seiner Suche.' },
-  { label: 'erste Lehrrede', prompt: 'Was geschah nach Buddhas Erwachen?', correct: 'Er hielt bei Sarnath seine erste Lehrrede.', wrong: ['Er verbot jede Weitergabe seiner Erkenntnis.', 'Er gründete ein Königreich in Rom.'], explanation: 'Die erste Lehrrede wird sinnbildlich „das Rad der Lehre in Bewegung setzen“ genannt.' },
+  { label: 'erste Lehrrede', prompt: 'Was geschah nach Buddhas Erwachen?', reviewPrompt: 'Wie gab Buddha seine Erkenntnisse nach dem Erwachen erstmals weiter?', correct: 'Er hielt bei Sarnath seine erste Lehrrede.', wrong: ['Er verbot jede Weitergabe seiner Erkenntnis.', 'Er gründete ein Königreich in Rom.'], explanation: 'Die erste Lehrrede wird sinnbildlich „das Rad der Lehre in Bewegung setzen“ genannt.' },
   { label: 'drei Kostbarkeiten', prompt: 'Was sind die drei Kostbarkeiten im Buddhismus?', correct: 'Buddha, Dharma und Sangha', wrong: ['Brahma, Vishnu und Shiva', 'Tora, Bibel und Koran'], explanation: 'Buddha ist der Lehrer, Dharma die Lehre und Sangha die Gemeinschaft.' },
   { label: 'eigene Worte zu Buddha', prompt: 'Welche Kurzantwort fasst Buddhas Lebensweg sinnvoll zusammen?', correct: 'Er begegnete dem Leid, suchte einen Weg, erwachte und gab seine Erkenntnis weiter.', wrong: ['Er erbte ein Reich und suchte vor allem Reichtum.', 'Er erklärte Leiden für völlig bedeutungslos.'], explanation: 'Eine gute freie Erzählung zeigt Ursache, Suche, Erkenntnis und Weitergabe.' },
 ];
@@ -88,10 +88,10 @@ const buddhaFacts: Fact[] = [
 const hinduismFacts: Fact[] = [
   { label: 'Ursprung des Hinduismus', prompt: 'Wo und wann entstand der Hinduismus?', correct: 'In Südasien über einen langen Zeitraum vor mehr als 3 000 Jahren', wrong: ['In Nordeuropa vor 300 Jahren', 'An einem einzigen Tag in Amerika'], explanation: 'Der Hinduismus entwickelte sich über lange Zeit in Südasien und hat keinen einzelnen Gründungstag.' },
   { label: 'kein einzelner Gründer', prompt: 'Wer gründete den Hinduismus?', correct: 'Es gibt keinen einzelnen Gründer.', wrong: ['Buddha allein', 'Ein römischer Kaiser'], explanation: 'Hinduistische Traditionen entwickelten sich über viele Jahrhunderte.' },
-  { label: 'Sanatana Dharma', prompt: 'Wie nennen viele Hindus ihre Religion auch?', correct: 'Sanatana Dharma – die ewige Ordnung oder der ewige Weg', wrong: ['Sangha – die Klostergemeinschaft', 'Trinität – Vater, Sohn und Heiliger Geist'], explanation: 'Sanatana Dharma ist eine verbreitete Selbstbezeichnung hinduistischer Traditionen.' },
+  { label: 'Sanatana Dharma', prompt: 'Wie nennen viele Hindus ihre Religion auch?', reviewPrompt: 'Welcher Ausdruck ist eine verbreitete Selbstbezeichnung hinduistischer Traditionen?', correct: 'Sanatana Dharma – die ewige Ordnung oder der ewige Weg', wrong: ['Sangha – die Klostergemeinschaft', 'Trinität – Vater, Sohn und Heiliger Geist'], explanation: 'Sanatana Dharma ist eine verbreitete Selbstbezeichnung hinduistischer Traditionen.' },
   { label: 'Brahman', prompt: 'Was bezeichnet Brahman im Hinduismus?', correct: 'Die höchste, alles durchdringende göttliche Wirklichkeit', wrong: ['Nur einen Tempel in Indien', 'Eine buddhistische Mönchsregel'], explanation: 'Brahman ist nicht dasselbe wie der Gott Brahma: Brahman bezeichnet die umfassende göttliche Wirklichkeit.' },
   { label: 'Atman', prompt: 'Was bezeichnet Atman in vielen hinduistischen Lehren?', correct: 'Das innerste Selbst oder die Seele eines Lebewesens', wrong: ['Ein Fest im Frühling', 'Eine heilige Stadt ausserhalb Asiens'], explanation: 'Viele Lehren fragen nach dem Verhältnis von Atman und Brahman.' },
-  { label: 'Mandir', prompt: 'Wie heisst ein hinduistischer Tempel?', correct: 'Mandir', wrong: ['Synagoge', 'Moschee'], explanation: 'Ein hinduistischer Tempel wird häufig Mandir genannt.' },
+  { label: 'Mandir', prompt: 'Wie heisst ein hinduistischer Tempel?', reviewPrompt: 'Eine hinduistische Familie besucht einen Tempel. Welches Wort bezeichnet diesen Ort?', correct: 'Mandir', wrong: ['Synagoge', 'Moschee'], explanation: 'Ein hinduistischer Tempel wird häufig Mandir genannt.' },
   { label: 'Hausaltar', prompt: 'Wo findet hinduistische Verehrung ausser im Tempel statt?', correct: 'Oft auch zu Hause an einem Hausaltar', wrong: ['Nur in Sportstadien', 'Ausschliesslich in Kirchen'], explanation: 'Viele Familien haben zu Hause einen kleinen Schrein oder Altar für die Puja.' },
   { label: 'heilige Schriften', prompt: 'Welche Texte gehören zu den heiligen Schriften des Hinduismus?', correct: 'Zum Beispiel Veden, Bhagavad Gita und Upanishaden', wrong: ['Nur die Tora', 'Nur der Koran'], explanation: 'Der Hinduismus kennt verschiedene alte und wichtige Textsammlungen.' },
   { label: 'Puja', prompt: 'Was ist eine Puja?', correct: 'Eine hinduistische Verehrungszeremonie mit Gebeten und Gaben', wrong: ['Eine buddhistische Bauform', 'Ein christliches Glaubensbekenntnis'], explanation: 'Bei einer Puja können Licht, Blumen, Wasser, Speisen oder Räucherwerk dargebracht werden.' },
@@ -128,7 +128,7 @@ const deityFacts: Fact[] = [
   { label: 'Murti', prompt: 'Was ist eine Murti?', correct: 'Eine geweihte Darstellung einer Gottheit, die bei der Verehrung gegenwärtig gedacht wird', wrong: ['Ein buddhistisches Regelbuch', 'Nur eine bedeutungslose Dekoration'], explanation: 'Eine Murti kann im Tempel oder Hausaltar Mittelpunkt einer Puja sein.' },
   { label: 'Vahana', prompt: 'Was ist ein Vahana bei hinduistischen Gottheiten?', correct: 'Ein Reit- oder Begleittier mit symbolischer Bedeutung', wrong: ['Eine heilige Schrift', 'Ein Gebetshaus'], explanation: 'Zum Beispiel wird Ganesha oft mit einer Maus und Durga mit Löwe oder Tiger dargestellt.' },
   { label: 'persönliche Verehrung', prompt: 'Müssen alle Hindus dieselbe Gottheit besonders verehren?', correct: 'Nein, Familien und Traditionen können unterschiedliche Gottheiten in den Mittelpunkt stellen.', wrong: ['Ja, überall ist nur dieselbe Gottheit erlaubt.', 'Nein, denn Gottheiten dürfen im Hinduismus nie verehrt werden.'], explanation: 'Die Vielfalt persönlicher und regionaler Verehrung ist ein wichtiges Merkmal des Hinduismus.' },
-  { label: 'Göttinnen und Götter', prompt: 'Welche Aussage über weibliche und männliche Formen des Göttlichen stimmt?', correct: 'Im Hinduismus werden Göttinnen und Götter als kraftvolle Formen des Göttlichen verehrt.', wrong: ['Nur männliche Darstellungen sind erlaubt.', 'Göttinnen kommen in hinduistischen Traditionen nicht vor.'], explanation: 'Göttinnen wie Lakshmi, Saraswati, Durga, Parvati und Kali sind in vielen Traditionen zentral.' },
+  { label: 'Göttinnen und Götter', prompt: 'Welche Aussage beschreibt die Bedeutung von Göttinnen im Hinduismus korrekt?', reviewPrompt: 'Was zeigt die Verehrung von Lakshmi, Saraswati, Durga, Parvati oder Kali?', correct: 'Im Hinduismus werden Göttinnen und Götter als kraftvolle Formen des Göttlichen verehrt.', wrong: ['Nur männliche Darstellungen sind erlaubt.', 'Göttinnen kommen in hinduistischen Traditionen nicht vor.'], explanation: 'Göttinnen wie Lakshmi, Saraswati, Durga, Parvati und Kali sind in vielen Traditionen zentral.' },
 ];
 
 export const questions: Question[] = [
@@ -158,6 +158,23 @@ export function buildAdaptiveRound(filter: Topic | 'Alle', items: Record<string,
   const random = options.random ?? Math.random;
   const allowedIds = options.onlyIds ? new Set(options.onlyIds) : null;
   const pool = questions.filter((question) => (filter === 'Alle' || question.topic === filter) && (!allowedIds || allowedIds.has(question.id)));
-  const size = Math.min(options.size ?? (filter === 'Alle' ? 15 : 12), pool.length);
-  return pool.map((question) => ({ id: question.id, rank: -Math.log(Math.max(random(), Number.EPSILON)) / practiceWeight(items[question.id]) })).sort((left, right) => left.rank - right.rank).slice(0, size).map(({ id }) => id);
+  const families = new Map<string, Question[]>();
+  for (const question of pool) {
+    const familyId = question.id.replace(/[ab]$/, '');
+    families.set(familyId, [...(families.get(familyId) ?? []), question]);
+  }
+  const size = Math.min(options.size ?? (filter === 'Alle' ? 15 : 12), families.size);
+  return [...families.entries()]
+    .map(([, variants]) => ({ variants, rank: -Math.log(Math.max(random(), Number.EPSILON)) / Math.max(...variants.map((question) => practiceWeight(items[question.id]))) }))
+    .sort((left, right) => left.rank - right.rank)
+    .slice(0, size)
+    .map(({ variants }) => {
+      const weighted = variants.map((question) => ({ question, weight: practiceWeight(items[question.id]) }));
+      let cursor = random() * weighted.reduce((sum, entry) => sum + entry.weight, 0);
+      for (const entry of weighted) {
+        cursor -= entry.weight;
+        if (cursor <= 0) return entry.question.id;
+      }
+      return weighted.at(-1)!.question.id;
+    });
 }
