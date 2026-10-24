@@ -188,6 +188,10 @@ td:first-child { font-weight:850; }
 .srfBadge { flex:0 0 auto; border-radius:999px; padding:7px 10px; background:#d52b1e; color:#fff; font-size:11px; font-weight:900; }
 .srfVideoFrame { aspect-ratio:16/9; background:#101817; }
 .srfVideoFrame iframe { width:100%; height:100%; display:block; border:0; }
+.videoQuestions { padding:17px 20px 4px; border-top:1px solid var(--line); background:#fffefa; font-size:14px; line-height:1.55; }
+.videoQuestions strong { color:var(--teal-dark); }
+.videoQuestions ol { margin:8px 0 10px; padding-left:23px; }
+.videoQuestions li { margin:3px 0; }
 .srfVideoFooter { padding:13px 20px 15px; display:flex; align-items:center; justify-content:space-between; gap:18px; }
 .srfVideoFooter p { margin:0; color:var(--muted); font-size:11px; line-height:1.45; }
 .srfVideoFooter a { flex:0 0 auto; color:var(--teal-dark); font-size:12px; font-weight:850; }

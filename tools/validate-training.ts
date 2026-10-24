@@ -1,10 +1,11 @@
 import assert from 'node:assert/strict';
-import { buildAdaptiveRound, questions, shuffleIndices, topics } from '../lib/training.ts';
+import { advanceRoundHistory, buildAdaptiveRound, questions, shuffleIndices, topics } from '../lib/training.ts';
 
-assert.equal(questions.length, 200, 'the bank must contain 200 questions');
+assert.equal(questions.length, 216, 'the bank must contain 216 questions');
 assert.equal(new Set(questions.map(({ id }) => id)).size, questions.length, 'question ids must be unique');
 assert.equal(new Set(questions.map(({ prompt }) => prompt)).size, questions.length, 'question prompts must be unique');
-for (const topic of topics) assert.equal(questions.filter((question) => question.topic === topic).length, 40, `${topic} must contain 40 questions`);
+const expectedTopicCounts = [40, 46, 40, 48, 42];
+for (const [index, topic] of topics.entries()) assert.equal(questions.filter((question) => question.topic === topic).length, expectedTopicCounts[index], `${topic} has the expected number of questions`);
 for (const question of questions) {
   assert.equal(question.options.length, 3, `${question.id} must contain three options`);
   assert.ok(question.answer >= 0 && question.answer < question.options.length, `${question.id} must have a valid answer`);
@@ -30,6 +31,15 @@ for (const filter of ['Alle', ...topics] as const) {
     const round = buildAdaptiveRound(filter, {}, { random });
     assert.equal(new Set(round.map((id) => id.replace(/[ab]$/, ''))).size, round.length, `${filter} round ${seed} repeats a concept`);
   }
+}
+for (const filter of ['Alle', ...topics] as const) {
+  const family = (id: string) => id.replace(/[ab]$/, '');
+  const totalFamilies = new Set(questions.filter((question) => filter === 'Alle' || question.topic === filter).map((question) => family(question.id))).size;
+  const first = buildAdaptiveRound(filter, {}, { random: () => 0.5 });
+  const history = advanceRoundHistory(filter, undefined, first);
+  const second = buildAdaptiveRound(filter, {}, { random: () => 0.5, history });
+  const overlap = second.filter((id) => first.some((previous) => family(previous) === family(id))).length;
+  assert.equal(overlap, Math.max(0, first.length + second.length - totalFamilies), `${filter} should repeat concepts only when its pool is exhausted`);
 }
 const sameConceptMistakes = buildAdaptiveRound('Buddhismus', {}, { onlyIds: ['b5a', 'b5b'], size: 2, random: () => 0.5 });
 assert.equal(sameConceptMistakes.length, 1, 'mistake rounds must not repeat two variants of the same concept');

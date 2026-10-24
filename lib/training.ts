@@ -1,6 +1,7 @@
 export type Topic = 'Überblick & Vergleich' | 'Buddhismus' | 'Buddhas Leben & Lehre' | 'Hinduismus' | 'Hinduistische Gottheiten';
 export type Question = { id: string; topic: Topic; prompt: string; options: string[]; answer: number; explanation: string };
 export type ItemStat = { attempts: number; correct: number };
+export type RoundHistory = { seenFamilyIds: string[]; recentFamilyIds: string[] };
 
 export const topics: Topic[] = ['Überblick & Vergleich', 'Buddhismus', 'Buddhas Leben & Lehre', 'Hinduismus', 'Hinduistische Gottheiten'];
 
@@ -60,6 +61,9 @@ const buddhismFacts: Fact[] = [
   { label: 'Lotus', prompt: 'Was kann die Lotusblüte im Buddhismus symbolisieren?', correct: 'Reinheit und Erwachen trotz schwieriger Bedingungen', wrong: ['Militärische Macht', 'Den Besitz eines Landes'], explanation: 'Wie eine Blüte aus schlammigem Wasser wachsen kann, steht der Lotus für geistige Entwicklung.' },
   { label: 'Gaben', prompt: 'Warum bringen manche Buddhisten in Tempeln Blumen, Licht oder Räucherwerk dar?', correct: 'Als Zeichen von Respekt, Dankbarkeit und Erinnerung an die Lehre', wrong: ['Um Buddha Nahrung als Schöpfergott zu geben', 'Weil nur teure Gaben zur Erleuchtung führen'], explanation: 'Gaben sind symbolische Handlungen; Praxis und Bedeutung unterscheiden sich nach Tradition.' },
   { label: 'Vielfalt des Buddhismus', prompt: 'Welche Aussage über buddhistische Traditionen ist richtig?', correct: 'Theravada, Mahayana und Vajrayana setzen unterschiedliche Schwerpunkte.', wrong: ['Alle Buddhisten üben überall genau gleich.', 'Es gibt nur eine buddhistische Gemeinschaft weltweit.'], explanation: 'Der Buddhismus ist vielfältig; Lehre, Rituale und Alltagsformen unterscheiden sich regional.' },
+  { label: 'Pagode und Vihara', prompt: 'Auf einem Arbeitsblatt stehen Pagode und Vihara. Welche Zuordnung passt?', reviewPrompt: 'Wie unterscheiden sich eine buddhistische Pagode und ein Vihara?', correct: 'Pagode: turmartige religiöse Bauform; Vihara: Kloster oder Unterkunft für Ordensleute', wrong: ['Pagode: buddhistische Schrift; Vihara: hinduistische Gottheit', 'Pagode: Festtag; Vihara: Symbol auf einer Gebetsfahne'], explanation: 'Pagoden kommen besonders in asiatischen buddhistischen Bautraditionen vor. Vihara bezeichnet ein Kloster oder eine Unterkunft von Mönchen und Nonnen.' },
+  { label: 'drei Teile des Tipitaka', prompt: 'Was gehört zu den drei Sammlungen des Pali-Kanons?', reviewPrompt: 'Was erklärt der Name Tipitaka, also „Drei Körbe“?', correct: 'Ordensregeln, Lehrreden und systematische Erläuterungen der Lehre', wrong: ['Veden, Bhagavad-Gita und Upanishaden', 'Drei Tempel, drei Glocken und drei Feste'], explanation: 'Im Theravada-Buddhismus gliedert sich der Pali-Kanon in Vinaya, Sutta und Abhidhamma.' },
+  { label: 'Dharma und Pali-Kanon', prompt: 'Dharma und Pali-Kanon werden auf dem Blatt nebeneinander genannt. Worin unterscheiden sie sich?', reviewPrompt: 'Welche Aussage trennt Buddhas Lehre von ihrer schriftlichen Überlieferung?', correct: 'Dharma bezeichnet die Lehre; der Pali-Kanon ist eine Sammlung überlieferter Texte.', wrong: ['Dharma ist ein Tempelturm; der Pali-Kanon ist eine Gottheit.', 'Beides sind Namen für genau dieselbe einzelne Person.'], explanation: 'Dharma meint im Buddhismus Buddhas Lehre. Der Pali-Kanon oder Tipitaka ist eine wichtige Textsammlung, nicht die Lehre selbst.' },
 ];
 
 const buddhaFacts: Fact[] = [
@@ -106,6 +110,10 @@ const hinduismFacts: Fact[] = [
   { label: 'Holi', prompt: 'Wofür ist das hinduistische Fest Holi bekannt?', correct: 'Für Farben, Frühlingsfreude und Geschichten vom Sieg des Guten', wrong: ['Für acht Tage ohne Licht', 'Für die Pilgerfahrt nach Mekka'], explanation: 'Holi wird regional verschieden gefeiert und ist besonders für farbiges Pulver bekannt.' },
   { label: 'Yoga', prompt: 'Was kann Yoga im hinduistischen Zusammenhang bedeuten?', correct: 'Einen geistigen und körperlichen Übungsweg zur Sammlung und Erkenntnis', wrong: ['Nur einen modernen Wettbewerb', 'Eine einzelne Tempelgottheit'], explanation: 'Yoga umfasst mehr als Körperübungen und hat vielfältige philosophische und religiöse Traditionen.' },
   { label: 'Om als Silbe', prompt: 'Was ist Om genauer?', correct: 'Eine heilige Silbe, die bei Gebet und Meditation gesprochen werden kann', wrong: ['Der Name eines einzigen Tempels', 'Ein Gesetzbuch des römischen Reiches'], explanation: 'Om wird geschrieben, gesprochen und gesungen und symbolisiert in vielen Lehren die umfassende Wirklichkeit.' },
+  { label: 'vier Veden', prompt: 'Welche Reihe nennt die vier Veden?', reviewPrompt: 'David soll die vier vedischen Sammlungen erkennen. Welche Namen passen?', correct: 'Rigveda, Samaveda, Yajurveda und Atharvaveda', wrong: ['Vinaya, Sutta, Abhidhamma und Tipitaka', 'Tora, Evangelien, Koran und Psalmen'], explanation: 'Die vier Veden gehören zu den ältesten hinduistischen Textsammlungen.' },
+  { label: 'Shruti und Smriti', prompt: 'Wie werden Veden und Bhagavad-Gita in hinduistischen Textgruppen eingeordnet?', reviewPrompt: 'Welche Zuordnung von Shruti und Smriti stimmt?', correct: 'Die Veden gehören zu Shruti; die Bhagavad-Gita wird gewöhnlich zu Smriti gezählt.', wrong: ['Die Veden gehören zu Smriti; der Pali-Kanon gehört zu Shruti.', 'Bhagavad-Gita und Veden sind buddhistische Ordensregeln.'], explanation: 'Shruti und Smriti sind zwei wichtige Kategorien hinduistischer Texte; die Einordnung kann je nach Tradition unterschiedlich gewichtet werden.' },
+  { label: 'Krishna und Arjuna', prompt: 'Wer spricht in der Bhagavad-Gita mit Arjuna?', reviewPrompt: 'Welche zwei Figuren stehen im Mittelpunkt des Gesprächs der Bhagavad-Gita?', correct: 'Krishna unterweist Arjuna über Handeln und Pflicht.', wrong: ['Buddha unterweist Mohammed über die fünf Säulen.', 'Brahma unterweist einen römischen Kaiser über das Klosterleben.'], explanation: 'Die Bhagavad-Gita ist ein Gespräch zwischen Krishna und Arjuna; Krishna wird in vielen Traditionen als Erscheinungsform Vishnus verehrt.' },
+  { label: 'Besuch eines Mandir', prompt: 'Was ist beim Besuch vieler Hindu-Tempel üblich?', reviewPrompt: 'Eine Familie besucht einen Mandir. Welche Handlung passt zu diesem Ort?', correct: 'Die Schuhe ausziehen und einer Gottheit mit Gebet oder Gaben Respekt erweisen.', wrong: ['Mit Schuhen in den Schrein treten und Bilder grundsätzlich verbieten.', 'Nur eine einzige vorgeschriebene Gebetsstunde für alle Besucher einhalten.'], explanation: 'In vielen Mandirs ziehen Besucher die Schuhe aus. Gebete, Licht, Blumen oder Speisen können Teil der Puja sein; Bräuche unterscheiden sich je nach Tempel.' },
 ];
 
 const deityFacts: Fact[] = [
@@ -129,6 +137,7 @@ const deityFacts: Fact[] = [
   { label: 'Vahana', prompt: 'Was ist ein Vahana bei hinduistischen Gottheiten?', correct: 'Ein Reit- oder Begleittier mit symbolischer Bedeutung', wrong: ['Eine heilige Schrift', 'Ein Gebetshaus'], explanation: 'Zum Beispiel wird Ganesha oft mit einer Maus und Durga mit Löwe oder Tiger dargestellt.' },
   { label: 'persönliche Verehrung', prompt: 'Müssen alle Hindus dieselbe Gottheit besonders verehren?', correct: 'Nein, Familien und Traditionen können unterschiedliche Gottheiten in den Mittelpunkt stellen.', wrong: ['Ja, überall ist nur dieselbe Gottheit erlaubt.', 'Nein, denn Gottheiten dürfen im Hinduismus nie verehrt werden.'], explanation: 'Die Vielfalt persönlicher und regionaler Verehrung ist ein wichtiges Merkmal des Hinduismus.' },
   { label: 'Göttinnen und Götter', prompt: 'Welche Aussage beschreibt die Bedeutung von Göttinnen im Hinduismus korrekt?', reviewPrompt: 'Was zeigt die Verehrung von Lakshmi, Saraswati, Durga, Parvati oder Kali?', correct: 'Im Hinduismus werden Göttinnen und Götter als kraftvolle Formen des Göttlichen verehrt.', wrong: ['Nur männliche Darstellungen sind erlaubt.', 'Göttinnen kommen in hinduistischen Traditionen nicht vor.'], explanation: 'Göttinnen wie Lakshmi, Saraswati, Durga, Parvati und Kali sind in vielen Traditionen zentral.' },
+  { label: 'Ganeshas Begleittier', prompt: 'Welches Tier ist auf manchen Darstellungen bei Ganesha zu sehen?', reviewPrompt: 'Woran kann man eine Darstellung von Ganesha zusätzlich zum Elefantenkopf erkennen?', correct: 'An einer Maus oder Ratte als Begleittier.', wrong: ['An einem Davidstern als Begleittier.', 'An einem Krokodil, das immer auf seinem Kopf sitzt.'], explanation: 'Ganesha wird häufig mit einem kleinen Nagetier als Vahana, als symbolischem Begleittier, dargestellt.' },
 ];
 
 export const questions: Question[] = [
@@ -154,7 +163,7 @@ function practiceWeight(stat?: ItemStat): number {
   return 1 + (1 - accuracy) * 7 + (accuracy < 0.8 ? 2 : 0) + Math.max(0, 2 - stat.attempts);
 }
 
-export function buildAdaptiveRound(filter: Topic | 'Alle', items: Record<string, ItemStat>, options: { onlyIds?: string[]; size?: number; random?: () => number } = {}): string[] {
+export function buildAdaptiveRound(filter: Topic | 'Alle', items: Record<string, ItemStat>, options: { onlyIds?: string[]; size?: number; random?: () => number; history?: RoundHistory } = {}): string[] {
   const random = options.random ?? Math.random;
   const allowedIds = options.onlyIds ? new Set(options.onlyIds) : null;
   const pool = questions.filter((question) => (filter === 'Alle' || question.topic === filter) && (!allowedIds || allowedIds.has(question.id)));
@@ -164,9 +173,11 @@ export function buildAdaptiveRound(filter: Topic | 'Alle', items: Record<string,
     families.set(familyId, [...(families.get(familyId) ?? []), question]);
   }
   const size = Math.min(options.size ?? (filter === 'Alle' ? 15 : 12), families.size);
+  const seen = new Set(options.onlyIds ? [] : options.history?.seenFamilyIds ?? []);
+  const recent = new Set(options.onlyIds ? [] : options.history?.recentFamilyIds ?? []);
   return [...families.entries()]
-    .map(([, variants]) => ({ variants, rank: -Math.log(Math.max(random(), Number.EPSILON)) / Math.max(...variants.map((question) => practiceWeight(items[question.id]))) }))
-    .sort((left, right) => left.rank - right.rank)
+    .map(([familyId, variants]) => ({ variants, priority: !seen.has(familyId) ? 0 : recent.has(familyId) ? 2 : 1, rank: -Math.log(Math.max(random(), Number.EPSILON)) / Math.max(...variants.map((question) => practiceWeight(items[question.id]))) }))
+    .sort((left, right) => left.priority - right.priority || left.rank - right.rank)
     .slice(0, size)
     .map(({ variants }) => {
       const weighted = variants.map((question) => ({ question, weight: practiceWeight(items[question.id]) }));
@@ -177,4 +188,11 @@ export function buildAdaptiveRound(filter: Topic | 'Alle', items: Record<string,
       }
       return weighted.at(-1)!.question.id;
     });
+}
+
+export function advanceRoundHistory(filter: Topic | 'Alle', history: RoundHistory | undefined, roundIds: string[]): RoundHistory {
+  const available = new Set(questions.filter((question) => filter === 'Alle' || question.topic === filter).map((question) => question.id.replace(/[ab]$/, '')));
+  const recentFamilyIds = [...new Set(roundIds.map((id) => id.replace(/[ab]$/, '')).filter((id) => available.has(id)))];
+  const seenFamilyIds = [...new Set([...(history?.seenFamilyIds ?? []), ...recentFamilyIds].filter((id) => available.has(id)))];
+  return { seenFamilyIds: seenFamilyIds.length === available.size ? recentFamilyIds : seenFamilyIds, recentFamilyIds };
 }
